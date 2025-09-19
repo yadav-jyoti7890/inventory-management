@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+/* .dark{
+    background-color: black!important;
+    color: white;
+} */
+
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.arrow {
+  display: inline-flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  line-height: 0.6;
+}
+.arrow i {
+  cursor: pointer;
+  color: black;
+  transition: color 0.2s ease;
+}
+.arrow i:hover {
+  color: #fff;
+}

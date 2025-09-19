@@ -1,0 +1,475 @@
+<!-- <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+  <h3 class="text-lg font-semibold text-gray-700">Category Section</h3>
+
+  <div class="flex-1 px-6">
+    <input type="text" placeholder="Search category..."  [formControl]="searchInput"
+      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+  </div>
+
+  <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" (click)="showPopUp()">
+    Add Category
+  </button>
+</div>
+
+<div class="mt-6 bg-pink-100 rounded-lg shadow overflow-auto m-2">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SN
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill"></i>
+            <i class="ri-arrow-down-s-fill"></i>
+          </div>
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill" (click)="onSortChange('name', 'asc')"></i>
+            <i class="ri-arrow-down-s-fill" (click)="onSortChange('name', 'desc')"></i>
+          </div>
+        </th>
+       
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      <tr *ngFor="let category of categoryResponse; let i = index">
+        <td class="px-6 py-4">{{(pageIndex*limit) + i+1}}</td>
+        <td class="px-6 py-4">{{category.name}}</td>
+     
+        <td>
+          <i class="ri-edit-2-fill mr-3" (click)="editCategory(category.category_id)"></i>
+          <i class="ri-delete-bin-fill" (click)="deleteCategory(category.category_id)"></i>
+        </td>
+
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="flex justify-center mt-4">
+  <mat-paginator [length]="totalCategory" [pageSize]="limit" [pageIndex]="pageIndex"
+    [pageSizeOptions]="[5, 10, 25, 50]"  (page)="onPageChange($event)" showFirstLastButtons  class="bg-red rounded shadow p-2 w-full">
+  </mat-paginator>
+</div>
+
+
+<div *ngIf="categoryForm" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 relative">
+
+    <button (click)="closeCategoryForm()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl">
+      ✕
+    </button>
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Add Category</h2>
+
+    <form class="space-y-4">
+      <div>
+        <label for="categoryName" class="block text-sm font-medium text-gray-700">
+          Category Name
+        </label>
+        <input type="text" id="categoryName" name="categoryName" placeholder="Enter category name"
+          [formControl]="categoryName"
+          class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+
+      <button type="button" (click)="addCategory()"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg shadow-md transition">
+        Save Category
+      </button>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="updateCategoryPopUp" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 relative">
+
+    <button (click)="closeUpdateCategoryForm()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl">
+      ✕
+    </button>
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Update Category</h2>
+
+    <form class="space-y-4">
+      <div>
+        <label for="categoryName" class="block text-sm font-medium text-gray-700">
+          Category Name
+        </label>
+        <input type="text" id="categoryName" name="categoryName" placeholder="Enter category name"
+          [formControl]="categoryName"
+          class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+
+      <button type="button" (click)="updateCategory()"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg shadow-md transition">
+        Save Category
+      </button>
+    </form>
+  </div>
+</div> -->
+
+
+
+<!-- Header Section -->
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <!-- Left: Title -->
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Category Management</h1>
+      <p class="text-sm text-gray-500 mt-1">Manage your product categories efficiently</p>
+    </div>
+
+    <!-- Middle: Search Box -->
+    <div class="flex-1 max-w-md mx-auto lg:mx-0 lg:max-w-lg">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          placeholder="Search categories..." 
+          [formControl]="searchInput"
+          class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm" 
+        />
+      </div>
+    </div>
+
+    <!-- Right: Add Button -->
+    <button 
+      class="inline-flex items-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+      (click)="showPopUp()"
+    >
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Add Category
+    </button>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+  <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm font-medium text-gray-500">Total Categories</p>
+        <p class="text-2xl font-semibold text-gray-900">{{totalCategory}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm font-medium text-gray-500">Active Categories</p>
+        <p class="text-2xl font-semibold text-gray-900">{{totalCategory}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm font-medium text-gray-500">This Month</p>
+        <p class="text-2xl font-semibold text-gray-900">+3</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table Section -->
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+  <!-- Table Header -->
+  <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+    <h3 class="text-lg font-medium text-gray-900">Categories</h3>
+    <p class="text-sm text-gray-500 mt-1">Manage and organize your product categories</p>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <div class="flex items-center space-x-1">
+              <span>SN</span>
+              <div class="flex flex-col">
+                <button class="text-gray-400 hover:text-gray-600">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <div class="flex items-center space-x-1">
+              <span>Category</span>
+              <div class="flex flex-col">
+                <button class="text-gray-400 hover:text-gray-600" (click)="onSortChange('name', 'asc')">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Status
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Created
+          </th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let category of categoryResponse; let i = index" class="hover:bg-gray-50 transition-colors duration-150">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+            {{(pageIndex*limit) + i+1}}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10">
+                <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <span class="text-sm font-medium text-white">{{category.name.charAt(0).toUpperCase()}}</span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">{{category.name}}</div>
+                <div class="text-sm text-gray-500">ID: {{category.category_id}}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              <svg class="w-1.5 h-1.5 mr-1" fill="currentColor" viewBox="0 0 8 8">
+                <circle cx="4" cy="4" r="3"></circle>
+              </svg>
+              Active
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {{category.created_at | date:'MMM dd, yyyy'}}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <div class="flex items-center justify-end space-x-2">
+              <button 
+                class="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50 transition-colors duration-150"
+                (click)="editCategory(category.category_id)"
+                title="Edit category"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button 
+                class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors duration-150"
+                (click)="deleteCategory(category.category_id)"
+                title="Delete category"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="categoryResponse.length === 0" class="text-center py-12">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No categories</h3>
+    <p class="mt-1 text-sm text-gray-500">Get started by creating a new category.</p>
+    <div class="mt-6">
+      <button 
+        type="button" 
+        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        (click)="showPopUp()"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Add Category
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="mt-6 bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+  <mat-paginator 
+    [length]="totalCategory" 
+    [pageSize]="limit" 
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[5, 10, 25, 50]"  
+    (page)="onPageChange($event)" 
+    showFirstLastButtons
+    class="w-full"
+  >
+  </mat-paginator>
+</div>
+
+<!-- Create Popup Modal -->
+<div *ngIf="categoryForm" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+    <!-- Modal panel -->
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+              Add New Category
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500">
+                Create a new category to organize your products.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <form class="px-4 pb-4 sm:px-6">
+        <div>
+          <label for="categoryName" class="block text-sm font-medium text-gray-700">
+            Category Name
+          </label>
+          <div class="mt-1">
+            <input 
+              type="text" 
+              id="categoryName" 
+              name="categoryName" 
+              placeholder="Enter category name"
+              [formControl]="categoryName"
+              class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" 
+            />
+          </div>
+        </div>
+      </form>
+      
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button 
+          type="button" 
+          class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+          (click)="addCategory()"
+        >
+          Create Category
+        </button>
+        <button 
+          type="button" 
+          class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          (click)="closeCategoryForm()"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Update Popup Modal -->
+<div *ngIf="updateCategoryPopUp" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+    <!-- Modal panel -->
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10">
+            <svg class="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </div>
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+              Update Category
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500">
+                Update the category information.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <form class="px-4 pb-4 sm:px-6">
+        <div>
+          <label for="categoryName" class="block text-sm font-medium text-gray-700">
+            Category Name
+          </label>
+          <div class="mt-1">
+            <input 
+              type="text" 
+              id="categoryName" 
+              name="categoryName" 
+              placeholder="Enter category name"
+              [formControl]="categoryName"
+              class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" 
+            />
+          </div>
+        </div>
+      </form>
+      
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button 
+          type="button" 
+          class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+          (click)="updateCategory()"
+        >
+          Update Category
+        </button>
+        <button 
+          type="button" 
+          class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          (click)="closeUpdateCategoryForm()"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

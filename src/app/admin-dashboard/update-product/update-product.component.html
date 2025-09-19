@@ -1,0 +1,99 @@
+<!-- Update Product Page -->
+<div class="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
+  <!-- Form Title -->
+  <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">
+    Update Product
+  </h2>
+
+  <!-- Form -->
+  <form class="space-y-4" [formGroup]="productForm">
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Product Name</label>
+        <input type="text" placeholder="Enter product name" class="mt-1 block w-full rounded-lg border border-gray-300 p-2 text-gray-900 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" formControlName="name" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Category</label>
+        <select formControlName="category_id" class="mt-1 block w-full rounded-lg border border-gray-300 p-2 text-gray-900 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="" disabled>Select category</option>
+          <option *ngFor="let cat of category" [ngValue]="cat.category_id">
+            {{cat.name}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row: Quantity + Price -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Quantity</label>
+        <input type="number" placeholder="Enter quantity" formControlName="quantity" class="mt-1 block w-full rounded-lg border border-gray-300 p-2 text-gray-900 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Price</label>
+        <input type="number" step="0.01" placeholder="Enter price" formControlName="price" class="mt-1 block w-full rounded-lg border border-gray-300 p-2 text-gray-900 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Description</label>
+      <textarea rows="3" placeholder="Enter product description" formControlName="description" class="mt-1 block w-full rounded-lg border border-gray-300 p-2 text-gray-900 
+               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+    </div>
+
+    <!-- Single Image -->
+    <div>
+      <label class="font-semibold">Single Image</label>
+      <input type="file" (change)="onSingleImageSelected($event)" />
+
+      <div class="flex gap-4 mt-2">
+        <img *ngIf="singleImagePreview; else oldImage" [src]="singleImagePreview"
+          class="w-24 h-24 object-cover rounded-lg border" />
+
+        <ng-template #oldImage>
+          <img *ngIf="existingSingleImage" [src]="existingSingleImage"
+            class="w-24 h-24 object-cover rounded-lg border" />
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Multiple Images -->
+    <div>
+      <label class="font-semibold">Multiple Images</label>
+      <input type="file" (change)="onMultipleImageSelected($event)" multiple />
+
+      <div class="flex flex-wrap gap-4 mt-2">
+        <!-- Existing DB images -->
+        <div *ngFor="let img of existingImages; let i = index" class="relative">
+          <img [src]="img" class="w-24 h-24 object-cover rounded-lg border" />
+          <button type="button" (click)="removeExistingImage(i)"
+            class="absolute top-0 right-0 bg-red-600 text-white px-1 rounded">
+            ✕
+          </button>
+        </div>
+
+        <!-- New preview images -->
+        <div *ngFor="let img of productImagesPreview; let i = index" class="relative">
+          <img [src]="img" class="w-24 h-24 object-cover rounded-lg border" />
+          <button type="button" (click)="removeNewImage(i)"
+            class="absolute top-0 right-0 bg-red-600 text-white px-1 rounded">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" (click)="updateProduct()"
+      class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg shadow-md transition">
+      Save Product
+    </button>
+  </form>
+</div>

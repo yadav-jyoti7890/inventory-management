@@ -1,0 +1,106 @@
+<!-- Container -->
+<div class="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+
+  <!-- Form Title -->
+  <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+    Add Product
+  </h2>
+
+  <!-- Form -->
+  <form class="space-y-6" [formGroup]="productForm">
+
+    <!-- Row: Product Name + Category -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Product Name -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">
+          Product Name
+        </label>
+        <input type="text" id="name" name="name" placeholder="Enter product name" class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" formControlName="name" />
+      </div>
+
+      <!-- Category Dropdown -->
+      <div>
+        <label for="category" class="block text-sm font-medium text-gray-700">
+          Category
+        </label>
+        <select id="category" name="category" formControlName="category_id" class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="" disabled selected>Select category</option>
+          <option *ngFor="let category of category" [ngValue]="category.category_id">
+            {{category.name}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row: Quantity + Price -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="quantity" class="block text-sm font-medium text-gray-700">
+          Quantity
+        </label>
+        <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" formControlName="quantity"
+          class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+
+      <div>
+        <label for="price" class="block text-sm font-medium text-gray-700">
+          Price
+        </label>
+        <input type="number" step="0.01" id="price" name="price" placeholder="Enter price" formControlName="price"
+          class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label for="description" class="block text-sm font-medium text-gray-700">
+        Description
+      </label>
+      <textarea id="description" name="description" rows="3" placeholder="Enter product description"
+        formControlName="description" class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
+               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+    </div>
+
+    <!-- Row: Single Image + Multiple Images -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Single Image -->
+      <div>
+        <label for="image" class="block text-sm font-medium text-gray-700">
+          Product Image
+        </label>
+        <input type="file" id="image" name="image" class="mt-1 block w-full text-sm text-gray-700 border border-gray-300 
+                 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+          formControlName="image" />
+      </div>
+
+      <!-- Multiple Images -->
+      <div>
+        <label for="multiImage" class="block text-sm font-medium text-gray-700">
+          Multiple Images
+        </label>
+        <input type="file" id="multiImage" name="multiImage" multiple class="mt-1 block w-full text-sm text-gray-700 border border-gray-300 
+                 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+          (change)="onMultipleImageSelected($event)" />
+      </div>
+    </div>
+
+    <!-- Preview of Selected Multiple Images -->
+    <div *ngIf="previewImages.length > 0" class="grid grid-cols-4 gap-3 mt-3">
+      <div *ngFor="let img of previewImages" class="w-24 h-24 border rounded-lg overflow-hidden">
+        <img [src]="img" class="w-full h-full object-cover" />
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit"
+      class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg shadow-md transition"
+      (click)="addProduct()">
+      Save Product
+    </button>
+  </form>
+</div>

@@ -1,0 +1,4 @@
+.confirm-header { padding: 12px 16px; }
+.confirm-body { padding: 18px 20px; color: #374151; } /* text-gray-700 */
+.confirm-actions { padding: 12px 16px; gap: 8px; background: #fff; }
+.btn-cancel { text-transform: none; }

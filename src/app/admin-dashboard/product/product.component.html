@@ -1,0 +1,95 @@
+<div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+  <!-- Left: Title -->
+  <h3 class="text-lg font-semibold text-gray-700">Product Section</h3>
+
+  <!-- Middle: Search Box -->
+  <div class="flex-1 px-6">
+    <input type="text" placeholder="Search category..." [formControl]="searchInput"
+      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+  </div>
+
+  <!-- Right: Add Button -->
+  <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" routerLink="/create-product">
+    Add Product
+  </button>
+</div>
+
+<!-- Table Section -->
+<div class="mt-6 bg-white rounded-lg shadow overflow-auto p-2">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SN
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill"></i>
+            <i class="ri-arrow-down-s-fill"></i>
+          </div>
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Products
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill" (click)="onSortChange('name', 'asc')"></i>
+            <i class="ri-arrow-down-s-fill" (click)="onSortChange('name', 'desc')"></i>
+          </div>
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill" (click)="onSortChange('Category', 'asc')"></i>
+            <i class="ri-arrow-down-s-fill" (click)="onSortChange('Category', 'desc')"></i>
+          </div>
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill" (click)="onSortChange('quantity', 'asc')"></i>
+            <i class="ri-arrow-down-s-fill" (click)="onSortChange('quantity', 'desc')"></i>
+          </div>
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">price
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill" (click)="onSortChange('price', 'asc')"></i>
+            <i class="ri-arrow-down-s-fill" (click)="onSortChange('price', 'desc')"></i>
+          </div>
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill" (click)="onSortChange('description', 'asc')"></i>
+            <i class="ri-arrow-down-s-fill" (click)="onSortChange('description', 'desc')"></i>
+          </div>
+        </th>
+        <!-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">create_at
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill"></i>
+            <i class="ri-arrow-down-s-fill"></i>
+          </div>
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description
+          <div class="arrow">
+            <i class="ri-arrow-up-s-fill"></i>
+            <i class="ri-arrow-down-s-fill"></i>
+          </div>
+        </th> -->
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">action</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      <tr *ngFor="let product of products let i = index">
+        <td class="px-6 py-4">{{(pageIndex*pageSize)+i+1}}</td>
+        <td class="px-6 py-4">{{product.name}}</td>
+        <td class="px-6 py-4">{{product.category_id}}</td>
+        <td class="px-6 py-4">{{product.quantity}}</td>
+        <td class="px-6 py-4">{{product.price}}</td>
+        <td class="px-6 py-4">{{product.description}}</td>
+        <!-- <td class="px-6 py-4">{{product.created_at }}</td>
+        <td class="px-6 py-4">{{product.updated_at}}</td> -->
+        <div class="flex gap-4">
+          <i class="ri-edit-2-fill cursor-pointer" [routerLink]="['/update-product', product.id]"></i>
+          <i class="ri-delete-bin-fill cursor-pointer" (click)="deleteProduct(product.id)"></i>
+          <i class="ri-eye-fill cursor-pointer" [routerLink]="['/show-product', product.id]"></i>
+        </div>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<mat-paginator [length]="totalProducts" [pageSize]="pageSize" [pageIndex]="pageIndex"
+  [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons (page)="onPageChange($event)">
+</mat-paginator>

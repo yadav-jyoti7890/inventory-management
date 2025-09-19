@@ -1,0 +1,41 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl font-bold text-gray-800">Purchase List</h2>
+      <button routerLink="/create-purchase" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        + Add Purchase
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-blue-600 text-white">
+            <th class="px-4 py-2 text-left">SN</th>
+            <th class="px-4 py-2 text-left">Vendor</th>
+            <th class="px-4 py-2 text-left">Invoice No.</th>
+            <th class="px-4 py-2 text-left">Date</th>
+            <th class="px-4 py-2 text-left">Total Amount</th>
+            <th class="px-4 py-2 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b hover:bg-gray-50" *ngFor="let Purchase of purchaseData; let i =index">
+            <td class="px-4 py-2">{{i+1}}</td>
+            <td class="px-4 py-2">{{Purchase.vendor_name}}</td>
+            <td class="px-4 py-2">INV-2025-001</td>
+            <td class="px-4 py-2">{{Purchase.purchase_date | date:'yyyy-MM-dd' }}</td>
+            <td class="px-4 py-2">₹ {{Purchase.total_amount }}</td>
+            <td class="px-4 py-2 flex space-x-2">
+              <button class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600" [routerLink]="['/update-purchase', Purchase.purchase_id]">Edit</button>
+              <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">Delete</button>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

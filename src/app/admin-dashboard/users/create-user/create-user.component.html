@@ -1,0 +1,94 @@
+<!-- Overlay (background dark) -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <!-- Popup Box -->
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 relative">
+    
+    <!-- Close Button -->
+    <button class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+      ✕
+    </button>
+
+    <!-- Form Title -->
+    <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">User Form</h2>
+
+    <form class="space-y-4">
+      <!-- Full Name -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+            <!-- User Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5.121 17.804A9.969 9.969 0 0112 15c2.21 0 4.216.72 5.879 1.925M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </span>
+          <input id="name" type="text" placeholder="Enter full name"
+            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+            <!-- Email Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 12H8m0 0l-4-4m4 4l-4 4m12-8l4 4-4 4" />
+            </svg>
+          </span>
+          <input id="email" type="email" placeholder="Enter email"
+            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <label for="contact" class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+            <!-- Phone Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 5h2l2 7-2 2v5h14v-5l-2-2 2-7h2" />
+            </svg>
+          </span>
+          <input id="contact" type="text" placeholder="Enter contact number"
+            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div>
+        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+        <div class="relative">
+          <span class="absolute top-2 left-3 text-gray-400">
+            <!-- Location Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 22s8-4.5 8-11a8 8 0 10-16 0c0 6.5 8 11 8 11z" />
+            </svg>
+          </span>
+          <textarea id="address" rows="2" placeholder="Enter address"
+            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex items-center justify-between pt-3">
+        <button type="reset"
+          class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition">Reset</button>
+        <button type="submit"
+          class="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

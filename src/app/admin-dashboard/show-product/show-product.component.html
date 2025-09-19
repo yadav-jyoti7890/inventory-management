@@ -1,0 +1,76 @@
+<div class="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+  <div class="bg-white rounded-xl shadow-lg flex max-w-6xl w-full">
+
+    <!-- Left Side: Large Image -->
+    <div class="w-1/2 p-6">
+      <!-- Main Image -->
+      <div class="rounded-xl overflow-hidden mb-4">
+        <img src="https://i.pinimg.com/736x/08/9e/d0/089ed000e7984c83bf2f10b2964cc5c2.jpg" 
+             alt="Laptop" 
+             class="w-full h-[500px] object-cover rounded-xl">
+      </div>
+      
+      <!-- Thumbnails -->
+      <div class="flex gap-3 mt-2">
+        <img src="https://i.pinimg.com/736x/19/1c/33/191c338455be72b9c0e72c933588eb44.jpg" alt="Thumb 1" class="w-20 h-20 rounded-lg border-2 border-blue-500 cursor-pointer">
+        <img src="https://i.pinimg.com/736x/21/f5/90/21f59019739a4a6c5012e91de94399c2.jpg" alt="Thumb 2" class="w-20 h-20 rounded-lg border hover:border-blue-500 cursor-pointer">
+        <img src="https://i.pinimg.com/736x/d3/e5/8b/d3e58b1c69ac0f5076ad424d206ecf62.jpg" alt="Thumb 3" class="w-20 h-20 rounded-lg border hover:border-blue-500 cursor-pointer">
+        <img src="https://i.pinimg.com/1200x/a1/f4/12/a1f412c754ad32d4da2fd20458c6bc87.jpg" alt="Thumb 4" class="w-20 h-20 rounded-lg border hover:border-blue-500 cursor-pointer">
+      </div>
+    </div>
+
+    <!-- Right Side: Product Details -->
+    <div class="w-1/2 p-6 flex flex-col justify-between">
+      <div class="space-y-4"  >
+
+        <!-- Product Name -->
+        <h2 class="text-3xl font-bold text-gray-800">{{product.name}}</h2>
+
+        <!-- Category -->
+        <div class="text-gray-600">
+          <span class="font-semibold">Category:</span> Electronics
+        </div>
+
+        <!-- Price & Offer -->
+        <div class="flex items-center gap-4">
+          <div class="text-blue-600 font-bold text-2xl">$1299</div>
+          <div class="text-gray-400 line-through">{{product.price}}</div>
+        </div>
+
+        <!-- Rating -->
+        <div class="flex items-center gap-2">
+          <span class="text-yellow-400">★</span>
+          <span class="text-gray-700 font-medium">4.8</span>
+        </div>
+
+        <!-- Description -->
+        <div class="text-gray-700">
+          <span class="font-semibold">Description:</span>{{product.description}}
+        </div>
+
+        <!-- Select Size -->
+        <div>
+          <h3 class="text-gray-700 font-medium mb-2">Select Size</h3>
+          <div class="flex gap-3">
+            <button class="px-4 py-2 border rounded-lg hover:bg-blue-50">37</button>
+            <button class="px-4 py-2 border rounded-lg hover:bg-blue-50">38</button>
+            <button class="px-4 py-2 border rounded-lg hover:bg-blue-50">39</button>
+            <button class="px-4 py-2 border rounded-lg hover:bg-blue-50">40</button>
+            <button class="px-4 py-2 border rounded-lg hover:bg-blue-50">41</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-4 mt-6">
+        <button class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">Buy Now</button>
+        <button class="flex-1 border border-blue-600 text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">Add to Cart</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Tailwind Icons (RemixIcon) -->
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
