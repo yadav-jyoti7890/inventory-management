@@ -152,7 +152,7 @@
 </div>
 
 <!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+<!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
   <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
     <div class="flex items-center">
       <div class="flex-shrink-0">
@@ -200,15 +200,15 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- Table Section -->
 <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
   <!-- Table Header -->
-  <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+  <!-- <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
     <h3 class="text-lg font-medium text-gray-900">Categories</h3>
     <p class="text-sm text-gray-500 mt-1">Manage and organize your product categories</p>
-  </div>
+  </div> -->
 
   <!-- Table -->
   <div class="overflow-x-auto">
@@ -239,9 +239,9 @@
               </div>
             </div>
           </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <!-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Status
-          </th>
+          </th> -->
           <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Created
           </th>
@@ -264,18 +264,18 @@
               </div>
               <div class="ml-4">
                 <div class="text-sm font-medium text-gray-900">{{category.name}}</div>
-                <div class="text-sm text-gray-500">ID: {{category.category_id}}</div>
+                <!-- <div class="text-sm text-gray-500">ID: {{category.category_id}}</div> -->
               </div>
             </div>
           </td>
-          <td class="px-6 py-4 whitespace-nowrap">
+          <!-- <td class="px-6 py-4 whitespace-nowrap">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
               <svg class="w-1.5 h-1.5 mr-1" fill="currentColor" viewBox="0 0 8 8">
                 <circle cx="4" cy="4" r="3"></circle>
               </svg>
               Active
             </span>
-          </td>
+          </td> -->
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             {{category.created_at | date:'MMM dd, yyyy'}}
           </td>

@@ -10,8 +10,18 @@ export class PurchaseService {
 
   constructor(private http: HttpClient) { }
 
-  public getPurchaseData() {
-    return this.http.get<getPurchaseDetails>('http://localhost:3000/api/purchase/getPurchaseData')
+  public getPurchaseData(params: { searchValue: string, page?: number, limit?: number, sortBy?: string, sortDir?: string }) {
+    const body: any = {};
+    if (params) {
+      if (params.searchValue) body.searchValue = params.searchValue
+      if (params.page) body.page = params.page
+      if (params.limit) body.limit = params.limit
+      if (params.sortBy) body.sortBy = params.sortBy
+      if (params.sortDir) body.sortDir = params.sortDir
+    }
+    console.log(body);
+  return this.http.post<getPurchaseDetails>(`http://localhost:3000/api/purchase/getPurchaseData`, body)
+
   }
 
   public getVendors(): Observable<any>{

@@ -22,13 +22,13 @@ export class CategoryService {
   // }
 
   public getAllCategory(params?: { searchValue:string, page?: number, limit?: number, sortBy?: string, sortDir?: string }): Observable<categorySortingResponse>{
-      const body: any = {};
+     const body: any = {};
       if (params) {
-        if (params.searchValue) body.searchValue = params.searchValue;
-        if (params.page) body.page = params.page;
-        if (params.limit) body.limit = params.limit;
-        if (params.sortBy) body.sortBy = params.sortBy;
-        if (params.sortDir) body.sortDir = params.sortDir;
+        if (params.searchValue) body.searchValue = params.searchValue 
+        if (params.page) body.page = params.page
+        if (params.limit) body.limit = params.limit
+        if (params.sortBy) body.sortBy = params.sortBy
+        if (params.sortDir) body.sortDir = params.sortDir
       }
       return this.http.post<categorySortingResponse>(`${this.apiUrl}/getCategoryBySorting`, body);
     }

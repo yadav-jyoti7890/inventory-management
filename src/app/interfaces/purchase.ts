@@ -36,7 +36,10 @@ export interface purchaseProduct {
 export interface getPurchaseDetails {
     status: string;
     message: number;
-    purchase: purchase[]
+    totalRecords:number;
+    totalPages:number;
+    currentPage:number;
+    purchases: purchase[]
 }
 
 export interface purchase {

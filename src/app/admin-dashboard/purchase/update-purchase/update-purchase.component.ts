@@ -3,10 +3,11 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } fr
 import { PurchaseService } from '../../../services/purchase.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { createPurchase, getProducts, getVendors, product, purchase, purchaseDataById,  vendor } from '../../../interfaces/purchase';
+import { createPurchase, getProducts, getVendors, product, purchase, purchaseDataById, vendor } from '../../../interfaces/purchase';
 import { purchaseForm, purchaseProduct } from '../../../interfaces/purchaseForm';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog/confirm-dialog.component';
 
 
 @Component({
@@ -31,7 +32,7 @@ export class UpdatePurchaseComponent implements OnInit {
   })
 
   constructor(private purchaseService: PurchaseService, private dialog: MatDialog, private snackBar: MatSnackBar,
-    private router: ActivatedRoute
+    private router: ActivatedRoute, private navigateRouter: Router
   ) { }
   ngOnInit(): void {
     this.getVendors()
@@ -50,12 +51,12 @@ export class UpdatePurchaseComponent implements OnInit {
     return productGroup
   }
 
-  public addProductRow(i: string) {
+  public addProductRow() {
     const addProductRow = this.purchaseForm.controls.productsRow as FormArray;
     addProductRow.push(this.createProductRow())
   }
 
-  public removeProductRow(i: string) {
+  public removeProductRow() {
     const removeProduct = this.purchaseForm.controls.productsRow as FormArray;
     removeProduct.removeAt(removeProduct.length - 1)
   }
@@ -66,17 +67,23 @@ export class UpdatePurchaseComponent implements OnInit {
     const quantity = ProductRow?.controls.quantity.value || 0
     const totalAmount = quantity * price
     ProductRow?.controls.totalAmount.setValue(totalAmount)
-    // this.grandTotalAmount()
+    this.grandTotalAmount()
   }
 
   public grandTotalAmount() {
-    let total = 0
-    const ProductArray = this.purchaseForm.controls.productsRow
+    console.log("grandTotalAmount");
+
+    let total = 0;
+    const ProductArray = this.purchaseForm.controls.productsRow;
     ProductArray.controls.forEach(element => {
-      const price = element.controls.price.value || 0
-      const quantity = element.controls.quantity.value || 0
-      total = (quantity * price)
+      const quantity = element.controls.quantity.value ?? 0;
+      const price = element.controls.price.value ?? 0;
+      const rowTotal = quantity * price;
+      total += rowTotal;
     });
+    this.grandTotal = total;
+    console.log(this.grandTotal);
+
   }
 
   public createPurchase() {
@@ -122,7 +129,7 @@ export class UpdatePurchaseComponent implements OnInit {
         this.grandTotal = this.purchaseData[0].total_amount
 
         const productsArray = this.purchaseForm.controls.productsRow as FormArray;
-        productsArray.clear(); 
+        productsArray.clear();
 
         this.purchaseData.forEach(item => {
           productsArray.push(
@@ -139,14 +146,70 @@ export class UpdatePurchaseComponent implements OnInit {
     })
   }
 
-  public updateProduct(){
+  public updateProduct() {
     console.log(this.purchaseForm.value);
     const purchaseData = {
       vendors: this.purchaseForm.value.vendors,
       purchaseDate: this.purchaseForm.value.purchaseDate,
-      purchaseProduct: this.purchaseForm.value.productsRow
+      purchaseProduct: this.purchaseForm.value.productsRow,
+      oldProducts: this.purchaseData
     }
-    this.purchaseService.updateProduct(this.purchaseId, purchaseData).subscribe({})
+    console.log(this.purchaseData);
+
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: { message: 'Are you sure you want to update purchase data?' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.purchaseService.updateProduct(this.purchaseId, purchaseData).subscribe({
+          next: (response) => {
+            this.snackBar.open('purchase create successfully!', 'Close', { duration: 3000, horizontalPosition: 'end', verticalPosition: 'top' });
+            this.navigateRouter.navigate(['./purchase-list'])
+          },
+          error: (error) => {
+            console.log(error)
+            this.snackBar.open(error.error, 'Close', { duration: 3000, horizontalPosition: 'end', verticalPosition: 'top' });
+          }
+        })
+      }
+    });
+
+
+    // this.purchaseService.updateProduct(this.purchaseId, purchaseData).subscribe({
+    //   next: (response)=>{
+    //     console.log(response)
+    //   }
+    // })
 
   }
+
+  public filterProductArray(currentIndex: number): product[] {
+    let selectedValue = this.purchaseForm.controls.productsRow.controls
+      .map((x, index: number) => index !== currentIndex ? +x.get('product')?.value! : null)
+      .filter((id): id is number => !!id);
+    return this.products.filter(p => !selectedValue.includes(p.id));
+  }
+
+  // public deleteCategory(id: number) {
+  //   const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+  //     data: { message: 'Are you sure you want to delete this purchase?' }
+  //   });
+
+  //   dialogRef.afterClosed().subscribe(result => {
+  //     if (result) {
+  //       this.categoryService.deleteCategory(id).subscribe({
+  //         next: () => {
+  //           this.snackBar.open('Category deleted successfully!', 'Close', { duration: 3000 });
+  //           this.getAllCategory();
+  //         },
+  //         error: (error) => {
+  //           console.log(error);
+  //           this.snackBar.open(error.error.message, 'Close', { duration: 3000 });
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
 }

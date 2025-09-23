@@ -1,6 +1,7 @@
 const db = require("../config/dbConnection");
 
 const PurchaseModel = {
+
   // Check vendor exists
   checkVendorExists: (connection, vendorId, callback) => {
     const sql = `SELECT * FROM vendors WHERE id = ?`;
@@ -22,16 +23,18 @@ const PurchaseModel = {
   // Insert purchase details
   createPurchaseDetail: (connection, detailData, callback) => {
     const { purchase_id, product_id, quantity, price, total } = detailData;
-    console.log(purchase_id, product_id, quantity, price, total); 
+    console.log(detailData, "detailData");
+    
     const sql = `INSERT INTO purchase_details(purchase_id, product_id, quantity, price, total) VALUES (?,?,?,?,?)`;
     connection.query(sql, [purchase_id, product_id, quantity, price, total], callback);
   },
 
   // Insert stock log
   insertStockLog: (connection, logData, callback) => {
-    const { product_id, stock_quantity, type } = logData;
-    const sql = `INSERT INTO stock_log_table (product_id, stock_quantity, type) VALUES (?,?,?)`;
-    connection.query(sql, [product_id, stock_quantity, type], callback);
+    const { product_id, stock_quantity, type, activity, purchase_id } = logData;
+    console.log(logData, "logData");
+    const sql = `INSERT INTO stock_log_table (product_id, stock_quantity, type, activity, purchase_id) VALUES (?,?,?,?,?)`;
+    connection.query(sql, [product_id, stock_quantity, type, activity, purchase_id], callback);
   },
 
   // Update product stock
@@ -41,33 +44,71 @@ const PurchaseModel = {
   },
 
   // Get all purchases 
-  findAll: (callback) => {
-    const sql = `SELECT 
-    p.id AS purchase_id,
-    v.id AS vendors_id,
-    pr.id AS product_id,
-    p.invoice_number as invoice_number,
-    v.name AS vendor_name,
-    pr.name AS product_name,
-    pd.quantity,
-    pd.price,
-    p.created_at AS purchase_date,
-    p.total_amount
-FROM purchase p
-INNER JOIN vendors v 
-    ON p.vendors_id = v.id
-INNER JOIN purchase_details pd 
-    ON p.id = pd.purchase_id
-INNER JOIN product pr 
-    ON pd.product_id = pr.id`;
-    db.query(sql, callback);
-  },
+ findAll: (searchValue, limit, page, sortBy, sortOrder, callback) => {
+  const pageSize = parseInt(limit) || 5;
+  const currentPage = parseInt(page) || 1;
+  const offset = (currentPage - 1) * pageSize;
 
-  // Update purchase
-  // update: (connection, id, vendorId, callback) => {
-  //   const sql = `UPDATE purchase SET vendors_id = ? WHERE id = ?`;
-  //   connection.query(sql, [vendorId, id], callback);
-  // },
+  // Allowed sorting
+  const allowedSortBy = ['p.id', 'p.invoice_number', 'pr.name', 'p.created_at', 'p.total_amount', 'v.name'];
+  const allowedSortOrder = ['ASC', 'DESC'];
+
+  const orderByColumn = allowedSortBy.includes(sortBy) ? sortBy : 'p.id';
+  const orderByDirection = allowedSortOrder.includes(sortOrder?.toUpperCase()) ? sortOrder.toUpperCase() : 'ASC';
+
+  // Search
+  const searchQuery = searchValue ? `%${searchValue}%` : '%';
+
+  // Main query
+  const sql = `
+    SELECT 
+      p.id AS purchase_id,
+      v.id AS vendors_id,
+      p.invoice_number, 
+      pr.id AS product_id,
+      pr.name AS product_name,
+      v.name AS vendor_name,
+      p.created_at AS purchase_date,
+      p.total_amount
+    FROM purchase p
+    INNER JOIN vendors v ON p.vendors_id = v.id
+    INNER JOIN purchase_details pd ON p.id = pd.purchase_id
+    INNER JOIN product pr ON pd.product_id = pr.id
+    WHERE v.name LIKE ? OR p.invoice_number LIKE ?
+    GROUP BY p.id
+    ORDER BY ${orderByColumn} ${orderByDirection}
+    LIMIT ? OFFSET ?;
+  `;
+
+  // Count query
+  const sqlCount = `
+    SELECT COUNT(DISTINCT p.id) AS totalRecords
+    FROM purchase p
+    INNER JOIN vendors v ON p.vendors_id = v.id
+    INNER JOIN purchase_details pd ON p.id = pd.purchase_id
+    INNER JOIN product pr ON pd.product_id = pr.id
+    WHERE v.name LIKE ? OR p.invoice_number LIKE ?;
+  `;
+
+  db.query(sql, [searchQuery, searchQuery, pageSize, offset], (err, results) => {
+    if (err) return callback(err);
+
+    db.query(sqlCount, [searchQuery, searchQuery], (countErr, countResult) => {
+      if (countErr) return callback(countErr);
+
+      const totalRecords = countResult[0].totalRecords;
+      const totalPages = Math.ceil(totalRecords / pageSize);
+
+      callback(null, {
+        purchases: results,
+        totalRecords,
+        totalPages,
+        currentPage
+      });
+    });
+  });
+},
+
 
   // Delete purchase
   delete: (connection, id, callback) => {
@@ -87,34 +128,44 @@ INNER JOIN product pr
 
   getPurchaseDataById: (id, callback) => {
     const sql = `SELECT 
-    p.id AS purchase_id,
-    p.invoice_number as invoice_number,
-    v.id AS vendors_id,
-    pr.id AS product_id,
-    v.name AS vendor_name,
-    pr.name AS product_name,
-    pd.quantity,
-    pd.price,
-    pd.total,
-    p.created_at AS purchase_date,
-    p.total_amount
-FROM purchase p
-INNER JOIN vendors v 
-    ON p.vendors_id = v.id
-INNER JOIN purchase_details pd 
-    ON p.id = pd.purchase_id
-INNER JOIN product pr 
-    ON pd.product_id = pr.id
-WHERE p.id = ?`;
+      p.id AS purchase_id,
+      p.invoice_number as invoice_number,
+      v.id AS vendors_id,
+      pr.id AS product_id,
+      v.name AS vendor_name,
+      pr.name AS product_name,
+      pd.quantity,
+      pd.price,
+      pd.total,
+      p.created_at AS purchase_date,
+      p.total_amount
+    FROM purchase p
+    INNER JOIN vendors v ON p.vendors_id = v.id
+    INNER JOIN purchase_details pd ON p.id = pd.purchase_id
+    INNER JOIN product pr ON pd.product_id = pr.id
+    WHERE p.id = ?`;
     db.query(sql, [id], callback);
   },
 
   deletePurchaseDetailsData: (connection, id, callback) => {
-    console.log(id, "purchase id");
-    
     const sql = `DELETE FROM purchase_details WHERE purchase_id = ?`;
-    connection.query(sql, [id], callback)
+    connection.query(sql, [id], callback);
+  },
+
+  getStockDataById: (connection, id, callback) => {
+    const sql = `SELECT * FROM stock_log_table WHERE product_id = ?`;
+    connection.query(sql, [id], callback);
+  },
+
+  updateProductQuantityFromStockLog: (connection, productId, callback) => {
+    const sql = `UPDATE product p
+                 SET p.quantity = (SELECT IFNULL(SUM(stock_quantity),0) 
+                                   FROM stock_log_table 
+                                   WHERE product_id = ?)
+                 WHERE p.id = ?`;
+    connection.query(sql, [productId, productId], callback);
   }
+
 };
 
 module.exports = PurchaseModel;

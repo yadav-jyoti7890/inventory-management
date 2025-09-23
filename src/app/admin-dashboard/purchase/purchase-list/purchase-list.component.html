@@ -3,6 +3,8 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-bold text-gray-800">Purchase List</h2>
+      <input type="search" name="search" id="" placeholder="Search..." [formControl]="searchInput"
+        class="block w-70 pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
       <button routerLink="/create-purchase" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
         + Add Purchase
       </button>
@@ -13,29 +15,63 @@
       <table class="w-full border-collapse">
         <thead>
           <tr class="bg-blue-600 text-white">
-            <th class="px-4 py-2 text-left">SN</th>
-            <th class="px-4 py-2 text-left">Vendor</th>
-            <th class="px-4 py-2 text-left">Invoice No.</th>
-            <th class="px-4 py-2 text-left">Date</th>
-            <th class="px-4 py-2 text-left">Total Amount</th>
+            <th class="px-4 py-2 text-left">SN
+
+            </th>
+            <th class="px-4 py-2 text-left">Vendor
+              <div class="arrow">
+                <i class="ri-arrow-up-s-fill" (click)="sortData('v.name', 'asc')"></i>
+                <i class="ri-arrow-down-s-fill" (click)="sortData('v.name', 'desc')"></i>
+              </div>
+            </th>
+            <th class="px-4 py-2 text-left">Invoice No.
+              <div class="arrow">
+                <i class="ri-arrow-up-s-fill" (click)="sortData('p.invoice_number', 'asc')"></i>
+                <i class="ri-arrow-down-s-fill" (click)="sortData('p.invoice_number', 'desc')"></i>
+              </div>
+            </th>
+            <th class="px-4 py-2 text-left">Date
+              <div class="arrow">
+                <i class="ri-arrow-up-s-fill" (click)="sortData('p.create_at', 'asc')"></i>
+                <i class="ri-arrow-down-s-fill" (click)="sortData('p.create_at', 'desc')"></i>
+              </div>
+            </th>
+            <th class="px-4 py-2 text-left">Total Amount
+              <div class="arrow">
+                <i class="ri-arrow-up-s-fill" (click)="sortData('p.total_amount', 'asc')"></i>
+                <i class="ri-arrow-down-s-fill" (click)="sortData('p.total_amount', 'desc')"></i>
+              </div>
+            </th>
             <th class="px-4 py-2 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr class="border-b hover:bg-gray-50" *ngFor="let Purchase of purchaseData; let i =index">
-            <td class="px-4 py-2">{{i+1}}</td>
-            <td class="px-4 py-2">{{Purchase.vendor_name}}</td>
-            <td class="px-4 py-2">INV-2025-001</td>
-            <td class="px-4 py-2">{{Purchase.purchase_date | date:'yyyy-MM-dd' }}</td>
-            <td class="px-4 py-2">₹ {{Purchase.total_amount }}</td>
-            <td class="px-4 py-2 flex space-x-2">
-              <button class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600" [routerLink]="['/update-purchase', Purchase.purchase_id]">Edit</button>
-              <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">Delete</button>
-            </td>
-          </tr>
-
+          <ng-container *ngFor="let Purchase of purchaseData; let i = index">
+            <tr class="border-b hover:bg-gray-50 w-full">
+              <td class="px-4 py-2 w-10">{{ i + 1 }}</td>
+              <td class="px-4 py-2 w-40">{{ Purchase.vendor_name }}</td>
+              <td class="px-4 py-2 w-32">{{Purchase.invoice_number}}</td>
+              <td class="px-4 py-2 w-32">{{ Purchase.purchase_date | date:'yyyy-MM-dd' }}</td>
+              <td class="px-4 py-2 w-28">₹ {{ Purchase.total_amount }}</td>
+              <td class="px-4 py-2 w-40">
+                <div class="flex space-x-2">
+                  <button class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                    [routerLink]="['/update-purchase', Purchase.purchase_id]">
+                    Edit
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
         </tbody>
+
       </table>
+    </div>
+    <!-- Pagination -->
+    <div class="mt-6 bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+      <mat-paginator [length]="totalPurchase" [pageSize]="limit" [pageIndex]="pageIndex"
+        [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons class="w-full">
+      </mat-paginator>
     </div>
   </div>
 </div>

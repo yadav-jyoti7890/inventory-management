@@ -4,7 +4,7 @@ const PurchaseController = require("../controllers/purchasecontroller");
 
 // CRUD routes
 router.post("/", PurchaseController.addPurchase); // Add purchase
-router.get("/getPurchaseData", PurchaseController.getPurchaseData); //✅ 
+router.post("/getPurchaseData", PurchaseController.getPurchaseData); //✅ 
 router.patch("/:id", PurchaseController.updatePurchase); //❌  // Update purchase
 router.delete("/:id", PurchaseController.deletePurchase); //❌  // Delete purchase
 router.get("/getVendors", PurchaseController.getVendors)

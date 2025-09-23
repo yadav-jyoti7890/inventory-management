@@ -2,7 +2,8 @@
   <!-- Page Title -->
   <h2 class="text-3xl font-bold text-gray-800 mb-8">Add Purchase</h2>
 
-  <form class="space-y-8 bg-white p-8 rounded-lg shadow-lg" [formGroup]="purchaseForm">
+  <form class="space-y-8 bg-white p-8 rounded-lg shadow-lg"
+    [formGroup]="purchaseForm">
 
     <!-- Vendor -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -10,8 +11,9 @@
         <label class="block text-gray-700 font-medium mb-2">Vendor</label>
         <select formControlName="vendors"
           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="">-- Select Vendor --</option>
-          <option *ngFor="let vendor of vendors" [ngValue]="vendor.id">{{vendor.name}}</option>
+          <option value>-- Select Vendor --</option>
+          <option *ngFor="let vendor of vendors"
+            [ngValue]="vendor.id">{{vendor.name}}</option>
         </select>
       </div>
 
@@ -43,16 +45,22 @@
             </tr>
           </thead>
           <tbody formArrayName="productsRow">
-            <tr *ngFor="let product of purchaseForm.controls.productsRow.controls; let i = index" [formGroupName]="i">
+            <tr
+              *ngFor="let product of purchaseForm.controls.productsRow.controls; let i = index"
+              [formGroupName]="i">
               <td class="border px-4 py-2">
                 <select formControlName="product"
                   class="w-full border border-gray-300 rounded px-3 py-2">
-                  <option value="">-- Select Product --</option>
-                  <option *ngFor="let p of products" [ngValue]="p.id">{{p.name}}</option>
+                  <option value>-- Select Product --</option>
+                  <ng-container>
+                    <option *ngFor="let p of filterProductArray(i)"
+                      [ngValue]="p.id">{{p.name}}</option>
+                  </ng-container>
                 </select>
               </td>
               <td class="border px-4 py-2">
-                <input type="number" placeholder="Qty" formControlName="quantity"
+                <input type="number" placeholder="Qty"
+                  formControlName="quantity"
                   (input)="calculateTotalAmount(i)"
                   class="w-full border border-gray-300 rounded px-3 py-2">
               </td>
@@ -62,7 +70,8 @@
                   class="w-full border border-gray-300 rounded px-3 py-2">
               </td>
               <td class="border px-4 py-2">
-                <input type="number" formControlName="totalAmount" placeholder="Total" readonly
+                <input type="number" formControlName="totalAmount"
+                  placeholder="Total" readonly
                   class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100">
               </td>
               <td class="border px-4 py-2 text-center">
@@ -91,7 +100,8 @@
 
     <!-- Submit Button -->
     <div class="flex justify-end mt-6">
-      <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+      <button type="submit"
+        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
         (click)="createPurchase()">
         Save Purchase
       </button>
