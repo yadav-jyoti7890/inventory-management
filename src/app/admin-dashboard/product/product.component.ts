@@ -13,7 +13,6 @@ import { RouterLink } from '@angular/router';
 import { debounceTime } from 'rxjs';
 
 
-
 @Component({
   selector: 'app-product',
   imports: [CommonModule, ReactiveFormsModule, MatPaginatorModule, RouterLink],

@@ -1,0 +1,6 @@
+:disabled {
+  background-color: #f3f3f3; 
+  color: #999;                /* gray text */
+  cursor: not-allowed;        /* show "not allowed" cursor */
+  border: 1px solid #ccc;     /* lighter border */
+}

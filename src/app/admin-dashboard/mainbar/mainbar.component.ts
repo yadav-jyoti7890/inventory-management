@@ -3,7 +3,7 @@ import { ThemeService } from '../../services/theme.service';
 import { RouterLink } from '@angular/router';
 import { HeaderComponent } from "../header/header.component";
 import { DashboardService } from '../../services/dashboard.service';
-import { CategoryResponse, OrderResponse, ProductResponse, TodayOrderResponse, UserResponse, vendorsResponse } from '../../interfaces/dashboard';
+import { CategoryResponse, OrderResponse, ProductResponse, TodayOrderResponse, todayPurchaseResponse, totalPurchaseResponse, UserResponse, vendorsResponse } from '../../interfaces/dashboard';
 
 
 
@@ -20,7 +20,10 @@ export class MainbarComponent implements OnInit {
   public totalProducts: number = 0;
   public totalOrders: number = 0;
   public totalTodayOrders: number = 0;
-  public totalVendors: number = 0
+  public totalVendors: number = 0;
+  public totalPurchase: number = 0;
+  public totalTodayPurchase: number = 0;
+
 
   constructor(private dashboardService: DashboardService) { }
 
@@ -31,6 +34,9 @@ export class MainbarComponent implements OnInit {
     this.getTotalOrders()
     this.getTotalTodayOrders()
     this.getTotalVendors()
+    this.getTotalPurchase()
+    this.getTodayPurchase()
+
   }
 
   private getTotalUsers() {
@@ -96,7 +102,33 @@ export class MainbarComponent implements OnInit {
   private getTotalVendors() {
     this.dashboardService.getTotalVendors().subscribe({
       next: (response: vendorsResponse) => {
-         this.totalVendors = response.totalVendorsCount
+        this.totalVendors = response.totalVendorsCount
+      },
+      error: (error) => {
+        console.log(error);
+
+      }
+    })
+  }
+
+  private getTotalPurchase() {
+    this.dashboardService.getTotalPurchase().subscribe({
+      next: (response:totalPurchaseResponse) => {
+        console.log(response, "getTotalPurchase");
+        this.totalPurchase = response.totalPurchaseRecord
+      },
+      error: (error) => {
+        console.log(error);
+
+      }
+    })
+  }
+
+  private getTodayPurchase() {
+    this.dashboardService.getTodayPurchase().subscribe({
+      next: (response:todayPurchaseResponse) => {
+        console.log(response, "getTodayPurchase");
+       this.totalTodayPurchase = response.todayPurchase
       },
       error: (error) => {
         console.log(error);

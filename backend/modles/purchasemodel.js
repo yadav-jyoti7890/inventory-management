@@ -24,9 +24,14 @@ const PurchaseModel = {
   createPurchaseDetail: (connection, detailData, callback) => {
     const { purchase_id, product_id, quantity, price, total } = detailData;
     console.log(detailData, "detailData");
-    
+
     const sql = `INSERT INTO purchase_details(purchase_id, product_id, quantity, price, total) VALUES (?,?,?,?,?)`;
     connection.query(sql, [purchase_id, product_id, quantity, price, total], callback);
+  },
+  
+  updatePurchaseQuantity: (connection, grandTotal, purchaseId, callback) => {
+    const sql = `UPDATE purchase SET total_amount = ? WHERE id = ?`;
+    connection.query(sql, [grandTotal, purchaseId], callback);
   },
 
   // Insert stock log
@@ -43,72 +48,65 @@ const PurchaseModel = {
     connection.query(sql, [quantity, productId], callback);
   },
 
-  // Get all purchases 
- findAll: (searchValue, limit, page, sortBy, sortOrder, callback) => {
-  const pageSize = parseInt(limit) || 5;
-  const currentPage = parseInt(page) || 1;
-  const offset = (currentPage - 1) * pageSize;
+  findAll: (searchValue, limit, page, sortBy, sortOrder, callback) => {
+    const pageSize = parseInt(limit) || 5;
+    const currentPage = parseInt(page) || 1;
+    const offset = (currentPage - 1) * pageSize;
+    const allowedSortBy = ['p.id', 'p.invoice_number', 'v.name', 'p.created_at', 'p.total_amount'];
+    const allowedSortOrder = ['ASC', 'DESC'];
 
-  // Allowed sorting
-  const allowedSortBy = ['p.id', 'p.invoice_number', 'pr.name', 'p.created_at', 'p.total_amount', 'v.name'];
-  const allowedSortOrder = ['ASC', 'DESC'];
+    const orderByColumn = allowedSortBy.includes(sortBy) ? sortBy : 'p.id';
+    const orderByDirection = allowedSortOrder.includes(sortOrder?.toUpperCase()) ? sortOrder.toUpperCase() : 'ASC';
 
-  const orderByColumn = allowedSortBy.includes(sortBy) ? sortBy : 'p.id';
-  const orderByDirection = allowedSortOrder.includes(sortOrder?.toUpperCase()) ? sortOrder.toUpperCase() : 'ASC';
+    const searchQuery = `%${searchValue}%`;
 
-  // Search
-  const searchQuery = searchValue ? `%${searchValue}%` : '%';
-
-  // Main query
-  const sql = `
+    // Proper GROUP BY and safe parentheses
+    const sql = `
     SELECT 
       p.id AS purchase_id,
       v.id AS vendors_id,
-      p.invoice_number, 
-      pr.id AS product_id,
-      pr.name AS product_name,
+      p.invoice_number,
       v.name AS vendor_name,
       p.created_at AS purchase_date,
-      p.total_amount
+      p.total_amount,
+      GROUP_CONCAT(pr.name SEPARATOR ', ') AS products
     FROM purchase p
     INNER JOIN vendors v ON p.vendors_id = v.id
     INNER JOIN purchase_details pd ON p.id = pd.purchase_id
     INNER JOIN product pr ON pd.product_id = pr.id
-    WHERE v.name LIKE ? OR p.invoice_number LIKE ?
+    WHERE (v.name LIKE ? OR p.invoice_number LIKE ?)
     GROUP BY p.id
     ORDER BY ${orderByColumn} ${orderByDirection}
-    LIMIT ? OFFSET ?;
+    LIMIT ? OFFSET ?
   `;
 
-  // Count query
-  const sqlCount = `
+    const sqlCount = `
     SELECT COUNT(DISTINCT p.id) AS totalRecords
     FROM purchase p
     INNER JOIN vendors v ON p.vendors_id = v.id
     INNER JOIN purchase_details pd ON p.id = pd.purchase_id
     INNER JOIN product pr ON pd.product_id = pr.id
-    WHERE v.name LIKE ? OR p.invoice_number LIKE ?;
+    WHERE (v.name LIKE ? OR p.invoice_number LIKE ?)
   `;
 
-  db.query(sql, [searchQuery, searchQuery, pageSize, offset], (err, results) => {
-    if (err) return callback(err);
+    db.query(sql, [searchQuery, searchQuery, pageSize, offset], (err, results) => {
+      if (err) return callback(err);
 
-    db.query(sqlCount, [searchQuery, searchQuery], (countErr, countResult) => {
-      if (countErr) return callback(countErr);
+      db.query(sqlCount, [searchQuery, searchQuery], (countErr, countResult) => {
+        if (countErr) return callback(countErr);
 
-      const totalRecords = countResult[0].totalRecords;
-      const totalPages = Math.ceil(totalRecords / pageSize);
+        const totalRecords = countResult[0].totalRecords;
+        const totalPages = Math.ceil(totalRecords / pageSize);
 
-      callback(null, {
-        purchases: results,
-        totalRecords,
-        totalPages,
-        currentPage
+        callback(null, {
+          purchases: results,
+          totalRecords,
+          totalPages,
+          currentPage
+        });
       });
     });
-  });
-},
-
+  },
 
   // Delete purchase
   delete: (connection, id, callback) => {
@@ -122,7 +120,7 @@ const PurchaseModel = {
   },
 
   getProducts: (callback) => {
-    const sql = `SELECT name,id FROM product`;
+    const sql = `SELECT name,id, price, quantity FROM product`;
     db.query(sql, callback);
   },
 
@@ -164,7 +162,20 @@ const PurchaseModel = {
                                    WHERE product_id = ?)
                  WHERE p.id = ?`;
     connection.query(sql, [productId, productId], callback);
-  }
+  },
+
+  getTodayPurchase: (callback) => {
+    const sql = `
+      SELECT COUNT(*) AS totalTodayPurchase
+    FROM purchase
+    WHERE DATE(created_at) = CURDATE()`;
+    db.query(sql, callback);
+  },
+
+  getTotalPurchase: (callback) => {
+    const sql = `select count(*) as totalPurchase from purchase`;
+    db.query(sql, callback);
+  },
 
 };
 

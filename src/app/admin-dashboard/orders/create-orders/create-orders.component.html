@@ -1,0 +1,267 @@
+<!-- Unified Order Card -->
+<div class="w-full max-w-screen-2xl mx-auto px-6 mt-8" #stepTop>
+  <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 border border-gray-200 shadow-sm">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Create Order</h1>
+          <p class="text-sm text-gray-500">Build your order in three simple steps</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stepper -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="flex items-center p-3 rounded-lg border"
+        [ngClass]="currentStep===1 ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+          [ngClass]="currentStep===1 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'">1</div>
+        <div>
+          <div class="text-sm font-semibold" [ngClass]="currentStep===1 ? 'text-blue-700' : 'text-gray-700'">Customer
+          </div>
+          <div class="text-xs text-gray-500">Details & date</div>
+        </div>
+      </div>
+      <div class="flex items-center p-3 rounded-lg border"
+        [ngClass]="currentStep===2 ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+          [ngClass]="currentStep===2 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'">2</div>
+        <div>
+          <div class="text-sm font-semibold" [ngClass]="currentStep===2 ? 'text-blue-700' : 'text-gray-700'">Products
+          </div>
+          <div class="text-xs text-gray-500">Items & discounts</div>
+        </div>
+      </div>
+      <div class="flex items-center p-3 rounded-lg border"
+        [ngClass]="currentStep===3 ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+          [ngClass]="currentStep===3 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'">3</div>
+        <div>
+          <div class="text-sm font-semibold" [ngClass]="currentStep===3 ? 'text-blue-700' : 'text-gray-700'">Payment
+          </div>
+          <div class="text-xs text-gray-500">Summary & notes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form class="space-y-6" [formGroup]="orderForm">
+      <!-- Step 1: Customer -->
+      <div *ngIf="currentStep===1" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Customer</label>
+            <select class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 text-sm" 
+              formControlName="customerId" [appValidation]="orderForm.controls.customerId">
+              <option *ngFor="let customer of customers" [ngValue]="customer.id">{{customer.name}}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Order Date</label>
+            <div class="mt-1 relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2v-7H3v7a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <input type="date" [appValidation]="orderForm.controls.orderDate" formControlName="orderDate"
+                placeholder="Select order date"
+                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button type="button" (click)="goto(2)"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            Next
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Products -->
+      <div *ngIf="currentStep===2" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div class="flex justify-end mb-4">
+          <button type="button" (click)="addProductRow()"
+            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Product
+          </button>
+        </div>
+        <div class="space-y-4" formArrayName="CustomerOrder">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end"
+            *ngFor="let productRow of this.orderForm.controls.CustomerOrder.controls; let i = index"
+            [formGroupName]="i">
+            <div class="md:col-span-3">
+              <label class="block text-sm font-medium text-gray-700">Product</label>
+              <select class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 text-sm" (change)="selectProduct(i, $event)"
+                formControlName="productId" [appValidation]="productRow.controls.productId">
+                <option disabled selected>Select a product</option>
+                <option *ngFor="let product of products" [ngValue]="product.id">{{product.name}}</option>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700">Quantity</label>
+              <input type="number" (input)="calculateTotalAmount(i)" [appValidation]="productRow.controls.quantity" formControlName="quantity" placeholder="Enter quantity"
+                class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 text-sm" min="1" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700">Price</label>
+              <input type="number" (input)="calculateTotalAmount(i)" [appValidation]="productRow.controls.price" formControlName="price" placeholder="Enter price"
+                class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 text-sm"  [disabled]="true" />
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700">Subtotal</label>
+              <input type="number" [appValidation]="productRow.controls.totalAmount" formControlName="totalAmount" placeholder="Auto-calculated"
+                class="mt-1 block w-full border border-gray-200 bg-gray-50 rounded-lg p-2.5 text-sm" />
+            </div>
+            <div class="md:col-span-1 flex items-end">
+              <button type="button" (click)="removeProductRow()"
+                class="inline-flex items-center justify-center w-full h-10 px-2 py-2 rounded-lg border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 hover:border-red-300 transition-colors"
+                title="Remove product">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grand Total Row -->
+        <div class="mt-6 flex items-center justify-end gap-6">
+          <div class="text-right">
+            <div class="text-sm text-gray-500">Grand Total</div>
+            <div class="text-2xl font-semibold text-gray-900">{{grandTotal}}</div>
+          </div>
+        </div>
+
+        <!-- <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mt-6">
+        <div class="md:col-span-3">
+          <label class="block text-sm font-medium text-gray-700">Subtotal</label>
+          <input type="number" class="mt-1 block w-full border border-gray-200 bg-gray-50 rounded-lg p-2.5 text-sm" disabled />
+        </div>
+        <div class="md:col-span-3">
+          <label class="block text-sm font-medium text-gray-700">Tax</label>
+          <input type="number" class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 text-sm" />
+        </div>
+        <div class="md:col-span-3">
+          <label class="block text-sm font-medium text-gray-700">Shipping</label>
+          <input type="number" class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 text-sm" />
+        </div>
+        <div class="md:col-span-3">
+          <label class="block text-sm font-medium text-gray-700">Total</label>
+          <input type="number" class="mt-1 block w-full border border-gray-200 bg-gray-50 rounded-lg p-2.5 text-sm" disabled />
+        </div>
+      </div> -->
+
+        <div class="mt-6 flex justify-between">
+          <button type="button"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            (click)="goto(1)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          <button type="button"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm"
+            (click)="goto(3)">
+            Next
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Payment & Notes -->
+      <div *ngIf="currentStep===3" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Payment Method</label>
+            <select class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 text-sm"
+              formControlName="paymentMethod"  [appValidation]="orderForm.controls.paymentMethod">
+              <option disabled>Select method</option>
+              <option value="Cash">Cash</option>
+              <option value="Card">Card</option>
+              <option value="UPI">UPI</option>
+              <option value="Bank Transfer">Bank Transfer"</option>
+            </select>
+          </div>
+          <!-- <div>
+          <label class="block text-sm font-medium text-gray-700">Payment Status</label>
+          <select class="mt-1 block w-full border border-gray-300 rounded-lg p-2.5 text-sm" formControlName="paymentStatus">
+            <option  disabled>Select status</option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Partial">Partial</option>
+            <option value="Refunded">Refunded</option>
+          </select>
+        </div> -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Notes</label>
+            <textarea rows="3"  [appValidation]="orderForm.controls.notes" formControlName="notes" placeholder="Add any notes here"
+              class="mt-1 block w-full border border-gray-300 rounded-lg p-3 text-sm"></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="inline-flex items-start gap-2 text-sm text-gray-700">
+              <input type="checkbox" class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              <span>I agree to the <a href="#" class="text-blue-600 hover:underline">Terms and Conditions</a>.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-between">
+          <button type="button"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            (click)="goto(2)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          <div class="flex gap-3">
+            <button type="button"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Cancel
+            </button>
+            <button type="button" (click)="saveOrders()"
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Save Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="isSaving" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
+  <div class="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-blue-500"></div>
+</div>
+
+<!-- Success Animation -->
+<div *ngIf="isSuccess" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40">
+  <div class="bg-white p-6 rounded-2xl shadow-xl text-center animate-bounce">
+    ✅ <p class="mt-2 text-lg font-semibold text-green-600">Your order was successfully placed!</p>
+  </div>

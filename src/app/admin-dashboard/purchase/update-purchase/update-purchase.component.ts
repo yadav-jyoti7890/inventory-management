@@ -8,11 +8,12 @@ import { purchaseForm, purchaseProduct } from '../../../interfaces/purchaseForm'
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog/confirm-dialog.component';
+import { ValidationDirective } from '../../../shared/validation.directive';
 
 
 @Component({
   selector: 'app-update-purchase',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ValidationDirective],
   templateUrl: './update-purchase.component.html',
   styleUrl: './update-purchase.component.css'
 })
@@ -30,6 +31,7 @@ export class UpdatePurchaseComponent implements OnInit {
     purchaseDate: new FormControl(null),
     productsRow: new FormArray<FormGroup<purchaseProduct>>([this.createProductRow()])
   })
+  public isDisabled: boolean = true;
 
   constructor(private purchaseService: PurchaseService, private dialog: MatDialog, private snackBar: MatSnackBar,
     private router: ActivatedRoute, private navigateRouter: Router
@@ -39,6 +41,9 @@ export class UpdatePurchaseComponent implements OnInit {
     this.getProducts()
     this.purchaseId = this.router.snapshot.params['id']
     this.getProductsById()
+    this.purchaseForm.controls['vendors'].disable();
+    this.purchaseForm.controls['purchaseDate'].disable();
+    // this.invoiceNumber.
   }
 
   private createProductRow(): FormGroup {
@@ -59,15 +64,39 @@ export class UpdatePurchaseComponent implements OnInit {
   public removeProductRow() {
     const removeProduct = this.purchaseForm.controls.productsRow as FormArray;
     removeProduct.removeAt(removeProduct.length - 1)
+    this.grandTotalAmount()
   }
 
   public calculateTotalAmount(i: number) {
     const ProductRow = this.purchaseForm.controls.productsRow.controls.at(i)
-    const price = ProductRow?.controls.price.value || 0;
-    const quantity = ProductRow?.controls.quantity.value || 0
-    const totalAmount = quantity * price
-    ProductRow?.controls.totalAmount.setValue(totalAmount)
-    this.grandTotalAmount()
+    const price = ProductRow?.controls.price.value ?? null
+    const quantity = ProductRow?.controls.quantity.value ?? null
+
+    if (price === null) {
+      ProductRow?.controls.price.setErrors({ 'required': true })
+    } else if (price < 1) {
+      ProductRow?.controls.price.setErrors({ 'priceInvalid': true })
+    } else {
+      ProductRow?.controls.price.setErrors(null)
+    }
+
+    if (quantity === null) {
+      ProductRow?.controls.quantity.setErrors({ 'required': true })
+    } else if (quantity < 1) {
+      ProductRow?.controls.quantity.setErrors({ 'quantityInvalid': true })
+    } else {
+      ProductRow?.controls.quantity.setErrors(null)
+    }
+
+    if (price != null && quantity != null) {
+      const totalAmount = price * quantity;
+      ProductRow?.controls.totalAmount.setValue(totalAmount)
+        ProductRow?.controls.totalAmount.disable
+      this.grandTotalAmount()
+    }
+
+    // ProductRow?.controls.totalAmount.setValue(totalAmount)
+
   }
 
   public grandTotalAmount() {
@@ -147,16 +176,14 @@ export class UpdatePurchaseComponent implements OnInit {
   }
 
   public updateProduct() {
-    console.log(this.purchaseForm.value);
-    const purchaseData = {
+     if(this.purchaseForm.valid){
+       const purchaseData = {
       vendors: this.purchaseForm.value.vendors,
       purchaseDate: this.purchaseForm.value.purchaseDate,
       purchaseProduct: this.purchaseForm.value.productsRow,
       oldProducts: this.purchaseData
     }
-    console.log(this.purchaseData);
-
-
+ 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { message: 'Are you sure you want to update purchase data?' }
     });
@@ -170,12 +197,15 @@ export class UpdatePurchaseComponent implements OnInit {
           },
           error: (error) => {
             console.log(error)
-            this.snackBar.open(error.error, 'Close', { duration: 3000, horizontalPosition: 'end', verticalPosition: 'top' });
+            this.snackBar.open(error.message, 'Close', { duration: 3000, horizontalPosition: 'end', verticalPosition: 'top' });
           }
         })
       }
     });
 
+     }else{
+       this.purchaseForm.markAllAsTouched()
+     }
 
     // this.purchaseService.updateProduct(this.purchaseId, purchaseData).subscribe({
     //   next: (response)=>{

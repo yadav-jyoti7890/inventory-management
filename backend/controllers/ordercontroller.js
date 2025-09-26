@@ -5,13 +5,12 @@ const OrderController = {
 
     addOrder: async (req, res) => {
         console.log("addOrder");
+        console.log(req.body);
 
-        const { user_id, total_item, orders } = req.body;
-        if (!user_id || !total_item || !orders || orders.length === 0) {
+        const { customerId, orderDate, paymentMethod, notes, orderDetails } = req.body;
+        if (!customerId || !orderDate || !paymentMethod || !notes || orderDetails === 0) {
             return res.status(400).send({ message: "All fields are required" });
         }
-
-        console.log(user_id, total_item, orders);
 
         db.getConnection(async (err, connection) => {
             if (err) return res.status(500).send({ message: err.message });
@@ -24,40 +23,65 @@ const OrderController = {
 
                 try {
                     // 1️⃣ Check user exists
-                    const userResult = await OrderModel.checkUserExistsAsync(user_id, connection);
-                    if (userResult.length === 0) throw new Error("User not found");
+                    const userResult = await OrderModel.checkUserExistsAsync(customerId, connection);
+                    if (userResult.length === 0) throw new Error({ status: 400, message: "User not found" });
+
+                    console.log("user found");
 
                     // 2️⃣ Calculate total
-                    const totalAmount = orders.reduce((acc, item) => acc + item.quantity * item.price, 0);
+                    const totalAmount = orderDetails.reduce((acc, item) => acc + item.quantity * item.price, 0);
+
+                    console.log(parseInt(totalAmount), typeof totalAmount);
 
                     // 3️⃣ Insert order
-                    const orderResult = await OrderModel.createOrderAsync(user_id, total_item, totalAmount, connection);
+                    const orderResult = await OrderModel.createOrderAsync(customerId, totalAmount, connection);
                     const orderId = orderResult.insertId;
+                    console.log(orderId);
+
 
                     // 4️⃣ Loop orders sequentially
-                    for (const element of orders) {
-                        const productResult = await OrderModel.checkProductExistsAsync(element.product_id, connection);
+                    for (const element of orderDetails) {
+                        if (element.quantity <= 0 || element.price <= 0) throw new Error("Quantity and Price must be greater than 0");
+                        console.log(element);
 
-                        if (productResult.length === 0) throw new Error(`Product ${element.product_id} not found`);
+                        const productResult = await OrderModel.checkProductExistsAsync(element.productId, connection);
+
+                        if (productResult.length === 0) throw new Error(`Product ${element.productId} not found`);
                         if (element.quantity > productResult[0].quantity) throw new Error("Quantity not available");
                         if (element.price < productResult[0].price) throw new Error("Amount is not enough");
 
                         await OrderModel.createOrderDetailAsync({
                             order_id: orderId,
-                            product_id: element.product_id,
+                            product_id: element.productId,
                             price: element.price,
                             quantity: element.quantity,
                             total: element.quantity * element.price
                         }, connection);
 
+                        console.log("create order detail");
+
+
                         await OrderModel.insertStockLogAsync({
-                            product_id: element.product_id,
+                            product_id: element.productId,
                             stock_quantity: element.quantity,
+                            purchaseID: 131,
                             type: "sale"
                         }, connection);
 
-                        await OrderModel.updateProductStockAsync(element.product_id, element.quantity, connection);
+                        console.log("create stock log");
+
+
+                        await OrderModel.updateProductStockAsync(element.productId, element.quantity, connection);
                     }
+
+                    await OrderModel.insertPaymentDetailsAsync({
+                        order_id: orderId,
+                        customerId: customerId,
+                        totalAmount: totalAmount,
+                        payment_method: paymentMethod,
+                        notes: notes,
+                        paymentDate: orderDate
+                    }, connection);
 
                     // 5️⃣ Commit transaction
                     connection.commit((err) => {
@@ -77,7 +101,12 @@ const OrderController = {
     },
 
     getAllOrders: (req, res) => {
-        OrderModel.findAll((err, result) => {
+        const searchValue = req.body.searchValue || '';
+        const limit = parseInt(req.body.limit) || 5;
+        const page = parseInt(req.body.page) || 1;
+        const sortBy = req.body.sortBy;
+        const sortOrder = req.body.sortDir;
+        OrderModel.findAll(searchValue, limit, page, sortBy, sortOrder, (err, result) => {
             if (err) return res.status(500).send({ status: 500, message: err.message });
             res.send({ status: 200, message: "Get orders", orders: result });
         });
@@ -95,7 +124,7 @@ const OrderController = {
         OrderModel.getTotalTodayOrders((err, result) => {
             if (err) return res.status(500).send({ status: 500, message: err.message });
             console.log(result);
-            
+
             const count = result && result[0] ? result[0].totalTodayOrders : 0;
             res.send({ status: 200, message: "Get total today orders", totalTodayOrders: count })
         })
@@ -107,6 +136,14 @@ const OrderController = {
             const count = result && result[0] ? result[0].totalOrders : 0;
             res.send({ status: 200, message: "Get totalOrdersCount", totalOrders: count })
         })
+    },
+
+    getCustomers: (req, res) => {
+        OrderModel.getCustomers((err, result) => {
+            if (err) return res.status(500).send({ status: 500, message: err.message });
+            res.send({ status: 200, message: "Get customers", customers: result })
+        })
+
     }
 };
 

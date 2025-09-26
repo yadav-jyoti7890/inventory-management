@@ -6,10 +6,11 @@ const PurchaseController = require("../controllers/purchasecontroller");
 router.post("/", PurchaseController.addPurchase); // Add purchase
 router.post("/getPurchaseData", PurchaseController.getPurchaseData); //✅ 
 router.patch("/:id", PurchaseController.updatePurchase); //❌  // Update purchase
-router.delete("/:id", PurchaseController.deletePurchase); //❌  // Delete purchase
 router.get("/getVendors", PurchaseController.getVendors)
 router.get("/getProducts", PurchaseController.getProducts)
 router.get("/getPurchaseDataById/:id", PurchaseController.getPurchaseDataById)
+router.post("/getTotalPurchase", PurchaseController.getTotalPurchase)
+router.post("/getTodayPurchase", PurchaseController.getTodayPurchase)
 
 
 

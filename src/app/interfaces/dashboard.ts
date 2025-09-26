@@ -34,6 +34,19 @@ export interface vendorsResponse {
     totalVendorsCount: number;
 }
 
+export interface todayPurchaseResponse{
+    status: string,
+    message: string,
+    todayPurchase: number;
+}
+
+export interface totalPurchaseResponse{
+    status: string,
+    message: string,
+    totalPurchaseRecord: number;
+}
+
+
 
 
 

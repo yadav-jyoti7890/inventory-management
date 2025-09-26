@@ -1,91 +1,141 @@
-<!-- Container -->
-<div class="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+<!-- Header Section -->
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
+  <div class="flex items-start justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Add Product</h1>
+      <p class="text-sm text-gray-500 mt-1">Create a new product for your inventory</p>
+    </div>
+  </div>
+</div>
 
-  <!-- Form Title -->
-  <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-    Add Product
-  </h2>
+<!-- Container -->
+<div class="w-full max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl shadow-sm p-8">
 
   <!-- Form -->
   <form class="space-y-6" [formGroup]="productForm">
 
     <!-- Row: Product Name + Category -->
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Product Name -->
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-700">
-          Product Name
-        </label>
-        <input type="text" id="name" name="name" placeholder="Enter product name" class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
-                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" formControlName="name" />
+        <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+        <div class="mt-1 relative rounded-lg shadow-sm">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V7a2 2 0 00-2-2h-3l-2-2H9L7 5H5a2 2 0 00-2 2v6"></path>
+            </svg>
+          </div>
+          <input 
+            type="text" id="name" name="name" placeholder="Enter product name" 
+            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            formControlName="name" 
+          />
+        </div>
       </div>
 
       <!-- Category Dropdown -->
       <div>
-        <label for="category" class="block text-sm font-medium text-gray-700">
-          Category
-        </label>
-        <select id="category" name="category" formControlName="category_id" class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
-                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-          <option value="" disabled selected>Select category</option>
-          <option *ngFor="let category of category" [ngValue]="category.category_id">
-            {{category.name}}
-          </option>
-        </select>
+        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+        <div class="mt-1 relative rounded-lg shadow-sm">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"></path>
+            </svg>
+          </div>
+          <select 
+            id="category" name="category" formControlName="category_id"
+            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          >
+            <option value="" disabled selected>Select category</option>
+            <option *ngFor="let category of category" [ngValue]="category.category_id">{{category.name}}</option>
+          </select>
+        </div>
       </div>
     </div>
 
     <!-- Row: Quantity + Price -->
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label for="quantity" class="block text-sm font-medium text-gray-700">
-          Quantity
-        </label>
-        <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" formControlName="quantity"
-          class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
-                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+        <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+        <div class="mt-1 relative rounded-lg shadow-sm">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h10m-8 4h6"></path>
+            </svg>
+          </div>
+          <input 
+            type="number" id="quantity" name="quantity" placeholder="Enter quantity" formControlName="quantity"
+            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm" 
+          />
+        </div>
       </div>
 
       <div>
-        <label for="price" class="block text-sm font-medium text-gray-700">
-          Price
-        </label>
-        <input type="number" step="0.01" id="price" name="price" placeholder="Enter price" formControlName="price"
-          class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
-                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+        <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+        <div class="mt-1 relative rounded-lg shadow-sm">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.343-4 3s1.79 3 4 3 4 1.343 4 3-1.79 3-4 3m0-18v3m0 15v3"></path>
+            </svg>
+          </div>
+          <input 
+            type="number" step="0.01" id="price" name="price" placeholder="Enter price" formControlName="price"
+            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm" 
+          />
+        </div>
       </div>
     </div>
 
     <!-- Description -->
     <div>
-      <label for="description" class="block text-sm font-medium text-gray-700">
-        Description
-      </label>
-      <textarea id="description" name="description" rows="3" placeholder="Enter product description"
-        formControlName="description" class="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-gray-900 
-               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+      <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+      <div class="mt-1">
+        <textarea 
+          id="description" name="description" rows="3" placeholder="Enter product description"
+          formControlName="description" 
+          class="block w-full border border-gray-300 rounded-lg p-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+        ></textarea>
+      </div>
     </div>
 
     <!-- Row: Single Image + Multiple Images -->
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Single Image -->
       <div>
-        <label for="image" class="block text-sm font-medium text-gray-700">
-          Product Image
-        </label>
-        <input type="file" id="image" name="image" class="mt-1 block w-full text-sm text-gray-700 border border-gray-300 
-                 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-          formControlName="image" />
+        <label for="image" class="block text-sm font-medium text-gray-700">Product Image</label>
+        <div class="mt-1 flex items-center">
+          <label for="image" class="flex-1">
+            <div class="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+              <div class="flex items-center gap-2 text-gray-600">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h4l2-3h6l2 3h4v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"></path>
+                </svg>
+                <span class="text-sm">Choose file</span>
+              </div>
+              <span class="text-xs text-gray-400">PNG, JPG up to 5MB</span>
+            </div>
+          </label>
+          <input type="file" id="image" name="image" class="hidden" formControlName="image" />
+        </div>
       </div>
 
       <!-- Multiple Images -->
       <div>
-        <label for="multiImage" class="block text-sm font-medium text-gray-700">
-          Multiple Images
-        </label>
-        <input type="file" id="multiImage" name="multiImage" multiple class="mt-1 block w-full text-sm text-gray-700 border border-gray-300 
-                 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-          (change)="onMultipleImageSelected($event)" />
+        <label for="multiImage" class="block text-sm font-medium text-gray-700">Multiple Images</label>
+        <div class="mt-1 flex items-center">
+          <label for="multiImage" class="flex-1">
+            <div class="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+              <div class="flex items-center gap-2 text-gray-600">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4-4 4 4m2-10h6m-3-3v6"></path>
+                </svg>
+                <span class="text-sm">Choose files</span>
+              </div>
+              <span class="text-xs text-gray-400">PNG, JPG up to 10MB</span>
+            </div>
+          </label>
+          <input type="file" id="multiImage" name="multiImage" multiple class="hidden" (change)="onMultipleImageSelected($event)" />
+        </div>
       </div>
     </div>
 
@@ -98,8 +148,11 @@
 
     <!-- Submit Button -->
     <button type="submit"
-      class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg shadow-md transition"
+      class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
       (click)="addProduct()">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
       Save Product
     </button>
   </form>

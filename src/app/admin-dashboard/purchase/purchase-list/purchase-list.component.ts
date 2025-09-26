@@ -16,29 +16,29 @@ import { debounceTime, pipe } from 'rxjs';
   templateUrl: './purchase-list.component.html',
   styleUrl: './purchase-list.component.css'
 })
-export class PurchaseListComponent implements OnInit{
+export class PurchaseListComponent implements OnInit {
 
-  public purchaseData:purchase[]=[]
+  public purchaseData: purchase[] = []
   public totalPurchase = 0;
   public limit = 5;
   public pageIndex = 0;
-  public sortBy:string = 'asc';
-  public sortDir:string = 'id'
+  public sortBy: string = 'asc';
+  public sortDir: string = 'id'
   public searchInput = new FormControl;
 
   constructor(private purchaseService: PurchaseService, private dialog: MatDialog, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.getPurchaseData()
-      this.searchInput.valueChanges.pipe(debounceTime(500)).subscribe((value) => {
+    this.searchInput.valueChanges.pipe(debounceTime(500)).subscribe((value) => {
       this.searchPurchaseData(value);
     });
 
   }
 
-  public getPurchaseData(){
+  public getPurchaseData() {
     console.log("call");
-    
+
     let params = {
       searchValue: this.searchInput.value || '',
       page: this.pageIndex + 1,
@@ -47,37 +47,39 @@ export class PurchaseListComponent implements OnInit{
       sortDir: this.sortDir || undefined
     };
     this.purchaseService.getPurchaseData(params).subscribe({
-      next: (response:getPurchaseDetails)=>{
+      next: (response: getPurchaseDetails) => {
         console.log(response);
-        
-       this.purchaseData = response.purchases  
-       this.totalPurchase = response.totalRecords
-       console.log(this.purchaseData);
-        
+
+        this.purchaseData = response.purchases
+        this.totalPurchase = response.totalRecords
+        console.log(this.purchaseData);
+
       }
     })
   }
 
-  public onPageChange(event:PageEvent){
-   this.pageIndex = event.pageIndex;
-   this.limit = event.pageSize;
-   this.getPurchaseData();
+  public onPageChange(event: PageEvent) {
+    this.pageIndex = event.pageIndex;
+    this.limit = event.pageSize;
+    this.getPurchaseData();
   }
 
   public searchPurchaseData(value: string | null) {
     if (!value || value.trim() === '') {
+      this.pageIndex = 0
       this.getPurchaseData();
       return;
     }
+    this.pageIndex = 0
     this.getPurchaseData();
   }
 
- public sortData(column: string, direction: 'asc' | 'desc') {
+  public sortData(column: string, direction: 'asc' | 'desc') {
     this.sortBy = column;
     this.sortDir = direction;
     this.getPurchaseData();
   }
 
-  
- 
+
+
 }

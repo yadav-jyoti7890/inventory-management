@@ -18,6 +18,8 @@ export interface getProducts {
 export interface product {
     name: string;
     id: number;
+    price:number;
+    quantity:number
 }
 
 export interface createPurchase {

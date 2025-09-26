@@ -6,14 +6,12 @@ const PurchaseModel = require("../modles/purchasemodel");
 const PurchaseController = {
   addPurchase: (req, res) => {
     const { vendors, purchaseDate, productsRow } = req.body;
-    console.log(vendors, purchaseDate, productsRow)
-
     if (!vendors || !purchaseDate || !productsRow || productsRow.length === 0) {
       return res.status(400).send({ status: 400, message: "All fields are required" });
     }
+
     db.getConnection((err, connection) => {
       if (err) return res.status(500).send({ status: 500, message: "Database connection failed" });
-
       const rollbackAndSend = (status, message) => {
         if (!connection._released) {
           connection.rollback(() => {
@@ -34,30 +32,34 @@ const PurchaseController = {
           if (err) return rollbackAndSend(500, err.message);
           if (result.length === 0) return rollbackAndSend({ status: 400, message: "Vendor not found" });
 
-          console.log(result)
-
           // 2️⃣ Calculate total
           let totalAmount = productsRow.reduce((sum, el) => sum + el.quantity * el.price, 0);
 
           // 3️⃣ Insert purchase
           PurchaseModel.createPurchase(connection, vendors, totalAmount, purchaseDate, (err, orderResult) => {
             if (err) return rollbackAndSend({ 500: err.message });
-            console.log(orderResult)
-
             const purchaseId = orderResult.insertId;
             let completed = 0;
             let hasError = false;
 
             // 4️⃣ Loop purchase details
             productsRow.forEach((item) => {
-              if (hasError) return;
+              if (item.quantity <= 0 || item.price <= 0) {
+                hasError = true;
+                return rollbackAndSend({ status: 400, message: "Quantity and Price must be greater than 0" });
+              }
+
+              if (err) {
+                hasError = true;
+                return rollbackAndSend({ status: 500, message: err.message });
+              }
 
               PurchaseModel.checkProductExists(connection, item.product, (err, productResult) => {
                 if (hasError) return;
-                if (err) { hasError = true; return rollbackAndSend(500, err.message); }
-                if (productResult.length === 0) { hasError = true; return rollbackAndSend(400, `Product ${item.product} not found`); }
+                if (err) { hasError = true; return rollbackAndSend({ status: 500, message: "server error" }); }
+                if (productResult.length === 0) { hasError = true; return rollbackAndSend({ status: 400, message: `Product ${item.product} not found` }) }
 
-                console.log(productResult, "productResult");
+                //console.log(productResult, "productResult");
                 // Insert purchase detail
                 PurchaseModel.createPurchaseDetail(connection, {
                   purchase_id: purchaseId,
@@ -67,8 +69,8 @@ const PurchaseController = {
                   total: item.quantity * item.price,
                 }, (err, result) => {
                   if (hasError) return;
-                  if (err) { hasError = true; return rollbackAndSend(500, err.message); }
-                  console.log(result, "create purchase details");
+                  if (err) { hasError = true; return rollbackAndSend({ status: 500, message: err.message }) }
+                  //console.log(result, "create purchase details");
 
                   // Insert stock log
                   PurchaseModel.insertStockLog(connection, {
@@ -79,20 +81,20 @@ const PurchaseController = {
                     purchase_id: purchaseId,
                   }, (err) => {
                     if (hasError) return;
-                    if (err) { hasError = true; return rollbackAndSend(500, err.message); }
+                    if (err) { hasError = true; return rollbackAndSend({ status: 500, message: err.message }) }
 
                     // Update product stock
                     PurchaseModel.updateProductStock(connection, item.product, item.quantity, (err) => {
                       if (hasError) return;
-                      if (err) { hasError = true; return rollbackAndSend(500, err.message); }
+                      if (err) { hasError = true; return rollbackAndSend({ status: 500, message: err.message }) }
 
                       completed++;
                       if (completed === productsRow.length && !hasError) {
                         connection.commit((err) => {
-                          if (err) return rollbackAndSend(500, "Commit failed");
+                          if (err) return rollbackAndSend({ status: 500, message: "Commit failed" });
                           if (!connection._released) {
                             connection.release();
-                            res.status(200).send({ message: "Purchase added successfully" });
+                            res.status(200).send({ status: 200, message: "Purchase added successfully" });
                           }
                         });
                       }
@@ -108,17 +110,14 @@ const PurchaseController = {
   },
 
   getPurchaseData: (req, res) => {
-    const searchValue = req.body.searchValue;
-    const limit = req.body.limit;
-    const page = req.body.page;
+    const searchValue = req.body.searchValue || '';
+    const limit = parseInt(req.body.limit) || 5;
+    const page = parseInt(req.body.page) || 1;
     const sortBy = req.body.sortBy;
     const sortOrder = req.body.sortDir;
-    console.log(req.body)
-    PurchaseModel.findAll(searchValue, limit, page, sortBy, sortOrder, (err, data) => {
-      if (err) return res.status(500).send({ status: 500, message: err.message });
-      // const purchaseSortData = result.purchases
-      // console.log(purchaseSortData);
 
+    PurchaseModel.findAll(searchValue, limit, page, sortBy, sortOrder, (err, data) => {
+      if (err) return res.status(500).json({ status: 500, message: err.message });
       res.json(data);
     });
   },
@@ -127,7 +126,7 @@ const PurchaseController = {
   //   const { id } = (req.params);
   //   const purchaseId = parseInt(id);
   //   const { vendors, purchaseDate, purchaseProduct, oldProducts } = req.body;
-  //   console.log(oldProducts)
+  //   //console.log(oldProducts)
 
   //   // if (!vendors || !purchaseDate || !productsRow || productsRow.length === 0) {
   //   //   return res.status(400).send({ status: 400, message: "All fields are required" });
@@ -177,7 +176,7 @@ const PurchaseController = {
 
   //               // Insert stock log
   //               PurchaseModel.getStockDataById(connection, item.product, (err, result) => {
-  //                 // //console.log(result);
+  //                 // ////console.log(result);
   //                 if (hasError) return;
   //                 if (err) { hasError = true; return rollbackAndSend(500, err.message) }
 
@@ -207,7 +206,7 @@ const PurchaseController = {
   //                 //   if (hasError) return;
   //                 //   if (err) { hasError = true; return rollbackAndSend(500, err.message) }
 
-  //                 //   //console.log(result);
+  //                 //   ////console.log(result);
   //                 //   PurchaseModel.getStockDataById(connection, item.product, (err, result) => {
   //                 //     if (hasError) return;
   //                 //     if (err) { hasError = true; return rollbackAndSend(500, err.message) }
@@ -227,7 +226,7 @@ const PurchaseController = {
   //                 //       stock = 0;
   //                 //     }
 
-  //                 //     //console.log(stock, "update product quantity");
+  //                 //     ////console.log(stock, "update product quantity");
 
   //                 //     PurchaseModel.updateProductQuantity(connection, item.product, stock, (err) => {
   //                 //       if (hasError) return;
@@ -307,11 +306,11 @@ const PurchaseController = {
   //         //     }, (err, result) => {
   //         //       if (hasError) return;
   //         //       if (err) { hasError = true; return rollbackAndSend(500, err.message); }
-  //         //       //console.log(result);
+  //         //       ////console.log(result);
 
   //         //       // Insert stock log
   //         //       // PurchaseModel.getStockDataById(connection, id, (err, result) => {
-  //         //       //   //console.log(result);
+  //         //       //   ////console.log(result);
   //         //       // })
   //         //       // PurchaseModel.insertStockLog(connection, {
   //         //       //   product_id: item.product,
@@ -445,7 +444,7 @@ const PurchaseController = {
       const oldIds = oldProducts.map(p => p.product_id);
       const newIds = purchaseProduct.map(p => p.product);
       const deletedProducts = oldProducts.filter(p => !newIds.includes(p.product_id));
-     
+
       for (const item of deletedProducts) {
 
         await new Promise((resolve, reject) => {
@@ -468,7 +467,9 @@ const PurchaseController = {
         PurchaseModel.deletePurchaseDetailsData(connection, purchaseId, (err) => err ? reject(err) : resolve());
       });
 
+      let grandTotal = 0;
       for (const item of purchaseProduct) {
+        //console.log(item)
         const productResult = await new Promise((resolve, reject) => {
           PurchaseModel.checkProductExists(connection, item.product, (err, result) => err ? reject(err) : resolve(result));
         });
@@ -477,14 +478,26 @@ const PurchaseController = {
           return await rollback(`Product ${item.product} not found`, 400);
         }
 
+        if (item.quantity <= 0 || item.price <= 0) {
+
+          return await rollback({ message: "Quantity and Price must be greater than 0", status: 400 });
+        }
+
         await new Promise((resolve, reject) => {
           PurchaseModel.createPurchaseDetail(connection, {
             purchase_id: purchaseId,
             product_id: item.product,
             quantity: item.quantity,
             price: item.price,
-            total: item.quantity * item.price
+            total: item.quantity * item.price,
+
           }, (err) => err ? reject(err) : resolve());
+        });
+
+        grandTotal += item.quantity * item.price
+
+        await new Promise((resolve, reject) => {
+          PurchaseModel.updatePurchaseQuantity(connection, grandTotal, purchaseId, (err) => err ? reject(err) : resolve());
         });
 
         const oldItem = oldProducts.find(p => p.product_id === item.product);
@@ -497,7 +510,7 @@ const PurchaseController = {
               stock_quantity: quantityDiff,
               type: "purchase",
               activity: oldItem ? "update" : "insert",
-              purchase_id:purchaseId
+              purchase_id: purchaseId
             }, (err) => err ? reject(err) : resolve());
           });
 
@@ -533,7 +546,6 @@ const PurchaseController = {
   },
 
   getProducts: (req, res) => {
-
     PurchaseModel.getProducts((err, result) => {
       if (err) return res.status(500).send({ status: 500, message: err.message });
       res.send({ status: 200, message: "get All Products", products: result })
@@ -542,12 +554,31 @@ const PurchaseController = {
 
   getPurchaseDataById: (req, res) => {
     const { id } = req.params;
-    //console.log(id, "getPurchaseDataById");
+    ////console.log(id, "getPurchaseDataById");
     PurchaseModel.getPurchaseDataById(id, (err, result) => {
       if (err) return res.status(500).send({ status: 500, message: err.message });
       res.send({ status: 200, message: "get purchaseDataById", purchaseDataById: result })
     })
-  }
+  },
+
+  getTotalPurchase: (req, res) => {
+    PurchaseModel.getTotalPurchase((err, result) => {
+      if (err) return res.status(500).send({ status: 500, message: err.message });
+      const count = result && result[0] ? result[0].totalPurchase : 0;
+      res.send({ status: 200, message: "get totalPurchase purchase", totalPurchaseRecord: count })
+    })
+  },
+
+  getTodayPurchase: (req, res) => {
+    PurchaseModel.getTodayPurchase((err, result) => {
+      if (err) return res.status(500).send({ status: 500, message: err.message });
+      const count = result && result[0] ? result[0].totalTodayPurchase : 0;
+      res.send({ status: 200, message: "get today purchase", todayPurchase: count })
+    })
+  },
+
+
+
 
 };
 

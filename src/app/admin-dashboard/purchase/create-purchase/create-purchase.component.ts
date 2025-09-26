@@ -2,16 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { PurchaseService } from '../../../services/purchase.service';
 import { createPurchase, getProducts, getVendors, product, vendor } from '../../../interfaces/purchase';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { purchaseForm, purchaseProduct } from '../../../interfaces/purchaseForm';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
+import { ValidationDirective } from '../../../shared/validation.directive';
 
 
 @Component({
   selector: 'app-create-purchase',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ValidationDirective],
   templateUrl: './create-purchase.component.html',
   styleUrl: './create-purchase.component.css'
 })
@@ -20,11 +21,10 @@ export class CreatePurchaseComponent {
   public products: product[] = [];
   public checkProductId: number[] = [];
   public purchaseForm = new FormGroup<purchaseForm>({
-    vendors: new FormControl(0),
-    purchaseDate: new FormControl(null),
+    vendors: new FormControl(0, [Validators.required]),
+    purchaseDate: new FormControl(null, [Validators.required]),
     productsRow: new FormArray<FormGroup<purchaseProduct>>([this.createProductRow()])
   })
-  public rowOptions: { [key: number]: { id: number; name: string }[] } = {};
 
   // public totalAmount!: number;
   public grandTotal: number = 0;
@@ -38,38 +38,58 @@ export class CreatePurchaseComponent {
 
   private createProductRow(): FormGroup {
     const productGroup = new FormGroup({
-      product: new FormControl(null),
-      quantity: new FormControl(null),
-      price: new FormControl(null),
-      totalAmount: new FormControl(null)
+      product: new FormControl(null, Validators.required),
+      quantity: new FormControl(null, Validators.required,),
+      price: new FormControl(null, Validators.required),
+      totalAmount: new FormControl(null, Validators.required)
     });
     return productGroup
   }
 
-  public addProductRow(i: string) {
+  public addProductRow() {
     const addProductRow = this.purchaseForm.controls.productsRow as FormArray;
     addProductRow.push(this.createProductRow())
-    const rowIndex = addProductRow.length
-    this.rowOptions[rowIndex] = [...this.products];
   }
 
-  public removeProductRow(i: string) {
+  public removeProductRow() {
     const removeProduct = this.purchaseForm.controls.productsRow as FormArray;
     removeProduct.removeAt(removeProduct.length - 1)
-
+    this.grandTotalAmount()
   }
 
   public calculateTotalAmount(i: number) {
     const ProductRow = this.purchaseForm.controls.productsRow.controls.at(i)
-    const price = ProductRow?.controls.price.value || 0;
-    const quantity = ProductRow?.controls.quantity.value || 0
-    const totalAmount = quantity * price
-    ProductRow?.controls.totalAmount.setValue(totalAmount)
-    this.grandTotalAmount()
+    const price = ProductRow?.controls.price.value ?? null
+    const quantity = ProductRow?.controls.quantity.value ?? null
+
+    if (price === null) {
+      ProductRow?.controls.price.setErrors({ 'required': true })
+    } else if (price < 1) {
+      ProductRow?.controls.price.setErrors({ 'priceInvalid': true })
+    } else {
+      ProductRow?.controls.price.setErrors(null)
+    }
+
+    if (quantity === null) {
+      ProductRow?.controls.quantity.setErrors({ 'required': true })
+    } else if (quantity < 1) {
+      ProductRow?.controls.quantity.setErrors({ 'quantityInvalid': true })
+    } else {
+      ProductRow?.controls.quantity.setErrors(null)
+    }
+
+    if (price != null && quantity != null) {
+      const totalAmount = price * quantity;
+      ProductRow?.controls.totalAmount.setValue(totalAmount)
+      ProductRow?.controls.totalAmount.disable
+      this.grandTotalAmount()
+    }
+
+    // ProductRow?.controls.totalAmount.setValue(totalAmount)
+
   }
 
   public grandTotalAmount() {
-    console.log("grandTotalAmount");
 
     let total = 0;
     const ProductArray = this.purchaseForm.controls.productsRow;
@@ -80,31 +100,43 @@ export class CreatePurchaseComponent {
       total += rowTotal;
     });
     this.grandTotal = total;
-    console.log(this.grandTotal);
+    //console.log(this.grandTotal);
 
   }
 
 
   public createPurchase() {
-    console.log(this.purchaseForm.value);
-    this.purchaseService.createPurchase(this.purchaseForm.value as createPurchase).subscribe({
-      next: (response) => {
-        console.log(response);
+    // console.log(this.purchaseForm.value, this.purchaseForm.valid);
+    if (this.purchaseForm.valid) {
+      this.purchaseService.createPurchase(this.purchaseForm.value as createPurchase).subscribe({
+        next: (response) => {
+          this.snackBar.open('purchase create successfully!', 'Close', { duration: 3000, horizontalPosition: 'end', verticalPosition: 'top' });
+          this.router.navigate(['./purchase-list'])
+        },
+        error: (error) => {
+          console.log((error));
+          this.snackBar.open(error.error.message.message, 'Close', { duration: 3000, horizontalPosition: 'end', verticalPosition: 'top' });
+        }
+      })
+    } else {
+      console.log('Form Valid:', this.purchaseForm.valid);
 
-        this.snackBar.open('purchase create successfully!', 'Close', { duration: 3000, horizontalPosition: 'end', verticalPosition: 'top' });
-        this.router.navigate(['./purchase-list'])
-      },
-      error: (error) => {
-        this.snackBar.open(error.error, 'Close', { duration: 3000, horizontalPosition: 'end', verticalPosition: 'top' });
-
+      for (const controlName in this.purchaseForm.controls) {
+        const control = this.purchaseForm.get(controlName);
+        if (control?.invalid) {
+          console.log('Invalid Control:', controlName, control.errors);
+        }
       }
-    })
+
+      this.purchaseForm.markAllAsTouched()
+    }
+
   }
 
   private getVendors() {
     this.purchaseService.getVendors().subscribe({
       next: (response: getVendors) => {
-        console.log(response);
+        //console.log(response);
         this.vendors = response.vendors;
       }
     })

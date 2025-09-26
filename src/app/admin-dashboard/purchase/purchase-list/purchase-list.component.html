@@ -48,7 +48,7 @@
         <tbody>
           <ng-container *ngFor="let Purchase of purchaseData; let i = index">
             <tr class="border-b hover:bg-gray-50 w-full">
-              <td class="px-4 py-2 w-10">{{ i + 1 }}</td>
+              <td class="px-4 py-2 w-10">{{pageIndex * limit + i + 1 }}</td>
               <td class="px-4 py-2 w-40">{{ Purchase.vendor_name }}</td>
               <td class="px-4 py-2 w-32">{{Purchase.invoice_number}}</td>
               <td class="px-4 py-2 w-32">{{ Purchase.purchase_date | date:'yyyy-MM-dd' }}</td>

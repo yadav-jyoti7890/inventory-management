@@ -8,7 +8,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div>
         <label class="block text-gray-700 font-medium mb-2">Vendor</label>
-        <select formControlName="vendors" 
+        <select formControlName="vendors" [appValidation]="purchaseForm.controls.vendors"
           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">-- Select Vendor --</option>
           <option *ngFor="let vendor of vendors" [ngValue]="vendor.id">{{vendor.name}}</option>
@@ -17,13 +17,13 @@
 
       <div>
         <label class="block text-gray-700 font-medium mb-2">Invoice No.</label>
-        <input type="text" placeholder="INV-2025-001" [value]="invoiceNumber"  [readonly]="readonly"
+        <input type="text" placeholder="INV-2025-001" [value]="invoiceNumber"  [disabled]="isDisabled" 
           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
 
       <div>
         <label class="block text-gray-700 font-medium mb-2">Date</label>
-        <input type="date" formControlName="purchaseDate" [readonly]="readonly"
+        <input type="date" formControlName="purchaseDate" [readonly]="readonly" [appValidation]="purchaseForm.controls.purchaseDate"
           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
     </div>
@@ -45,7 +45,7 @@
           <tbody formArrayName="productsRow">
             <tr *ngFor="let product of purchaseForm.controls.productsRow.controls; let i = index" [formGroupName]="i">
               <td class="border px-4 py-2">
-                <select formControlName="product"
+                <select formControlName="product"  [appValidation]="product.controls.product"
                   class="w-full border border-gray-300 rounded px-3 py-2">
                   <option value="">-- Select Product --</option>
                   <option *ngFor="let p of filterProductArray(i)"
@@ -53,17 +53,17 @@
                 </select>
               </td>
               <td class="border px-4 py-2">
-                <input type="number" placeholder="Qty" formControlName="quantity"
+                <input type="number" placeholder="Qty" formControlName="quantity" [appValidation]="product.controls.quantity"
                   (input)="calculateTotalAmount(i)"
                   class="w-full border border-gray-300 rounded px-3 py-2">
               </td>
               <td class="border px-4 py-2">
-                <input type="number" placeholder="Price" formControlName="price"
+                <input type="number" placeholder="Price" formControlName="price"  [appValidation]="product.controls.price"
                   (input)="calculateTotalAmount(i)"
                   class="w-full border border-gray-300 rounded px-3 py-2">
               </td>
               <td class="border px-4 py-2">
-                <input type="number" formControlName="totalAmount" placeholder="Total" readonly
+                <input type="number" formControlName="totalAmount" placeholder="Total"  [appValidation]="product.controls.totalAmount"
                   class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100">
               </td>
               <td class="border px-4 py-2 text-center">

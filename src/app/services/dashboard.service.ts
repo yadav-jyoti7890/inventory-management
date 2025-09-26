@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CategoryResponse, OrderResponse, ProductResponse, TodayOrderResponse, UserResponse, vendorsResponse } from '../interfaces/dashboard';
+import { CategoryResponse, OrderResponse, ProductResponse, TodayOrderResponse, todayPurchaseResponse, totalPurchaseResponse, UserResponse, vendorsResponse } from '../interfaces/dashboard';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +33,14 @@ export class DashboardService {
 
   public getTotalVendors(){
     return this.http.post<vendorsResponse>(`${this.apiUrl}/api/vendors/totalVendorsCount`, {})
+  }
+
+  public getTodayPurchase(){
+    return this.http.post<todayPurchaseResponse>(`${this.apiUrl}/api/purchase/getTodayPurchase`, {})
+  }
+
+   public getTotalPurchase(){
+    return this.http.post<totalPurchaseResponse>(`${this.apiUrl}/api/purchase/getTotalPurchase`, {})
   }
 
 
